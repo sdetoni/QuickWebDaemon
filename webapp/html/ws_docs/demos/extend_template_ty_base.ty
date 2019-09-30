@@ -1,0 +1,15 @@
+<body>
+
+{%block header %}
+    {% include "templateHeader.html" %}
+{%endblock%}
+
+{%block content%}
+    <p>this is base content</p>
+{%endblock%}
+
+{%block footer %}
+    {% include "templateFooter.html" %}
+{%endblock%}
+
+</body>

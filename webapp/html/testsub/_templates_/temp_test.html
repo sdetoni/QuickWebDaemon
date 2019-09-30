@@ -1,0 +1,49 @@
+<html>
+123 dff
+{% autoescape on %}
+    here <html> here
+    {% autoescape off %}<code></code>{% endautoescape %}
+    </html>
+{% endautoescape %}
+
+
+{{myVar}}
+
+{% tag open_varblock %}
+
+{$
+
+import re
+for y in ("one","two"):
+    self.output(y + " ")
+$}
+
+{% comment blah blah comment %}
+    this is not shown
+{% endcomment %}
+
+<table border="1">
+{% for y in range (1, 5) %}
+    <tr><td>
+    <pr>line {{y}}
+    {% for x in range (1,20) %}
+        <pr>x:{{x}}</pr>
+    {%endfor%}
+    </pr>
+    </td></tr>
+{%endfor%}
+</table>
+
+
+{{  "sdfs" }}
+{$ myVar = 0 $}
+{% while myVar < 100 %}
+     hello {{ myVar }} {% cycle "one", "two", "three" %}
+
+{% endwhile myVar += 10 %}
+
+
+{% cyclereset %}
+
+{{ test }}
+</html>

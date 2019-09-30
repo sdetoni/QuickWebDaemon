@@ -1,0 +1,10 @@
+{$
+content = True
+header  = True
+$}
+
+{%extends "extend_template_ty_base.ty"%}
+
+{%block content%}
+    <p>this is the extended content</p>
+{%endblock%}

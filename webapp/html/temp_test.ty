@@ -1,0 +1,70 @@
+
+{$
+# init variables before rendering the output
+myVar = 'Blah Blah'
+count = 100
+test  = 'helloworld'
+$}
+
+<html>
+<h3>top</h3>
+{% verbatim %}
+<script>
+    console.log ("{% here %}");
+</script>
+{% endverbatim %}
+<h3>bottom</h3>
+123
+{% autoescape on %}
+    here <html> here
+    {% autoescape off %}<code></code>{% endautoescape %}
+    </html>
+{% endautoescape %}
+
+
+{{myVar}}
+
+{% tag open_varblock %}
+
+{$
+
+import re
+for y in ("one","two"):
+    self.output(y + " ")
+$}
+
+{% comment blah blah comment %}
+    this is not shown
+{% endcomment %}
+
+<table border="1">
+{% for y in range (1, 5) %}
+    <tr><td>
+    <pr>line {{y}}
+    {$ output ('###### start ##########') $}
+    {% for x in range (1,20) %}
+        <pr>x:{{x}}</pr>
+{$
+output (' dx = ' + str(x))
+output (' dx+1 = ' + str(x+1))
+$}
+    {% endfor %}
+    {$ output ('###### end ##########') $}
+    </pr>
+    </td></tr>
+{%endfor%}
+</table>
+
+
+{{  "sdfs" }}
+{$ myVar = 0 $}
+{% while myVar < 100 %}
+     hello {{ myVar }} {% cycle "one", "two", "three" %}
+
+{% endwhile myVar += 10 %}
+
+
+{% cyclereset %}
+
+{{ test }}
+</html>

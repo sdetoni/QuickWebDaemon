@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Server</title>
+</head>
+<body>
+
+<h5><u>Directory Structure</u></h5>
+<pre>
+    ./runner.py (use to start the web server)
+    |
+    +--config
+    |       daemon.cfg    (main server config)
+    |       user.cfg      (user config settings, included from daemon.cfg)
+    |       server.pem    (SSL server cert in pem format that is used on SSL/HTTPS connections)
+    |       ca-bundle.crt (root certs used for cert chains for SSL/HTTPS connections)
+    |       mimeTypes.txt (set custom file extensions to mime-types)
+    |       db_daemon.db  (standard sql lite db for use within web server for user applications)
+    |
+    +--daemon
+    |       ConfigLoader.py (used to load config files)
+    |       DBIO.py        (base sql lite db access class)
+    |       HTTPDaemon.py   (HTTP/HTTPS Web Daemon and used to run .py .ty and template web pages)
+    |       GlobalFuncs.py  (Logging, Start/Stop/Restart Web Daemon, Basic Session Authentication)
+    |
+    +--logs
+    |      Web logs
+    |
+    +--webapp (contains user web content, be it static html, or dynamic .py python scripts and .ty template/python scripts
+    |      _hidden_    (files contain in this directory are not accessible via GET requests)
+    |      _templates_ (files contain in this directory are not accessible via GET requests, and contain templates files accessible via self.templateRun('templatename.html') method
+    |      *.py        (python script files called upon get requests)
+    |      *.ty        (template script files called upon get requests)
+    +--webapp/subDirectory1/subDirectory2/...etc...  (user defined sub directories to store content)
+                                         | _hidden_
+                                         | _templates_
+                                         | *.py
+                                         | *.ty
+</pre>
+
+<h5><u>Dynamic File Types</u></h5>
+<p><b>*.py</b></b></p>
+<p>The .py files are treated like a normal Python script as if accessed directory from the HTTPWebServer web instance. The <b>self</b> reference points to the web
+ server instance</p>
+
+<p><b>*.ty</b></b></p>
+<p>The .ty files are treated like a normal Template script, parse and executed from the TemplateLoad instance. The <b>self</b> reference points to the HTTPWebServer
+ instance. The <b>_tmpl</b> reference points to the TemplateLoad</p>
+</body>
+</html>

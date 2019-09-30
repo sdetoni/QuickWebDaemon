@@ -1,0 +1,17 @@
+{$
+# Main Python Code to authorize a user
+import daemon.GlobalFuncs as GF
+
+######## Check for BASIC Admin Authentication to Site #####
+if not GF.AuthenticateAnySession(self): exit (0)
+###########################################################
+$}
+
+<html>
+<h3>Session Authorisation</h3>
+{% if GF.IsAdminUser(self) %}
+    <p>this page is being accessed by an admin person '{{ GF.AuthenticateGetUsername(self) }}'.</p>
+{% else %}
+    <p>this page is being accessed by an normal person '{{ GF.AuthenticateGetUsername(self) }}'.</p>
+{% endif %}
+</html>

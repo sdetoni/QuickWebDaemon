@@ -1,0 +1,2 @@
+This file is not accessible from the web, it is hidden from the Get request command.
+any directory named _hidden_ will not be accessible.

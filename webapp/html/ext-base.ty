@@ -1,0 +1,7 @@
+
+{% extends "base.html" %}
+
+      {%block content%}
+          <p>this is the extended content</p>
+      {%endblock%}
+<p>Appended text</p>

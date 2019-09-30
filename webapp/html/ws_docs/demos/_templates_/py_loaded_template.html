@@ -1,0 +1,17 @@
+<html>
+
+<h2>{{myVar}}</h2>
+
+{# comment blah blah comment
+    this is not shown
+#}
+
+<table border="1">
+{% for y in range (1, count) %}
+    {% if y % 10 == 0 %}
+        <tr><td><pr>line {{y}}</pr></td></tr>
+    {% endif %}
+{%endfor%}
+</table>
+
+</html>

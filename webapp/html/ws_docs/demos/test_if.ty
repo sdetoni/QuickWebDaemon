@@ -1,0 +1,88 @@
+{$
+# Main Python Code to Set/Load Variables used within the rendering process
+
+import daemon.GlobalFuncs as GF
+import demo.demodb as demodb
+
+# init variables before rendering the output
+myVar     = "Some example out text"
+myResults = demodb.DB.sqlRtnResults ("select * from  db_version");
+
+nzCities   = [
+# name             population area density
+["Auckland",	    1628900, 1086, 1499.9],
+["Wellington",	    418500,	444,   942.6],
+["Christchurch",	404500,	608,   665.3],
+["Hamilton",	    241200,	877,   275.0],
+["Tauranga",	    141600,	178,   795.5],
+["Napier-Hastings", 134500,	375,   358.7],
+["Dunedin",	        122000,	255,   478.4],
+["Palmerston North",86600,	178,   486.5],
+["Nelson",	        67500,	146,   462.3],
+["Rotorua",	        59500,	89,    668.5],
+["Whangarei",	    58800,	133,   442.1],
+["New Plymouth",	58300,	112,   520.5],
+["Invercargill",	51200,	123,   416.3],
+["Whanganui",       40900,	105,   389.5],
+["Gisborne",	    37200,	85,    437.6]
+]
+
+showThisBlock = "y"
+$}
+
+<body>
+
+{% include "templateHeader.html" %}abc
+
+<h3><u>Cycle Tag Example</u></h3>
+<table>
+    <tr><th colspan="100%">New Zealand Cities</th></tr>
+    <tr><th>Name</th><th>Population</th><th>area (km&sup2;)</th><th>Population Density (km&sup2;)</th></tr>
+    {% cyclereset %}
+    {% for city in nzCities %}
+        <tr class="{% cycle "blackWhite", "blueWhite"%}">
+            <td>{{city[0]}}</td><td>{{city[1]}}</td><td>{{city[2]}}</td><td>{{city[3]}}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+<style>
+    .top {
+        background-color:red;
+        color:white
+    }
+    .medium {
+        background-color:purple;
+        color:white
+    }
+    .mediumLow {
+        background-color:blue;
+        color:white
+    }
+    .low {
+        background-color:cyan;
+        color:white
+    }
+
+</style>
+
+<h3><u>If then else Tag Example</u></h3>
+<table>
+{% for city in nzCities %}
+    <tr class="
+    {% if city[1] < 1000000 %}
+        top
+    {% elif (city[1] > 1000000) and (city[1] < 400000) %}
+        medium
+    {% elif (city[1] > 400000) and (city[1] < 100000) %}
+        mediumLow
+    {% else %}
+        low
+    {% endif %}">
+        <td>{{city[0]}}</td><td>{{city[1]}}</td><td>{{city[2]}}</td><td>{{city[3]}}</td>
+    </tr>
+{% endfor %}
+</table>
+{% include "templateFooter.html" %}
+</body>
+

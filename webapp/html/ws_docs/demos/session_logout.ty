@@ -1,0 +1,19 @@
+{$
+# Main Python Code to authorize a user
+import daemon.GlobalFuncs as GF
+$}
+
+<html>
+<h3>Session Logout</h3>
+{% if not GF.AuthenticateAnySession(self) %}
+    <p>Not active session detected to logout!</p>
+{% else %}
+
+{$
+oldUsername = GF.AuthenticateGetUsername(self)
+GF.AuthenticateLogoutUser (self)
+$}
+    <p>User {{ oldUsername }} session has been removed!</p>
+{% endif %}
+</html>
+
