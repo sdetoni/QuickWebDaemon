@@ -844,6 +844,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
     cgiFormData         = {}
 
     headerCalled        = False
+    headerClosed        = False
 
     sessionCookieJar    = None
 
@@ -879,6 +880,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         self.serve_via_ssl       = serve_via_ssl
         self.ssl_server_pem      = ssl_server_pem
         self.headerCalled        = False
+        self.headerClosed        = False
 
         if self.serve_via_ssl:
             self.protocol = 'https'
@@ -1066,15 +1068,15 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
     def dumpSubmitFormData(self, fileHandle):
         self.getCGIParametersFormData()
 
-        fileHandle.write ('Headers\n')
+        fileHandle.write (bytes('Headers\n'))
         for key, value in self.headers.items():
-            fileHandle.write('  %s: %s\n' % (key, value))
+            fileHandle.write(bytes('  %s: %s\n' % (key, value)))
 
-        fileHandle.write('Client: %s\n' % str(self.client_address))
-        fileHandle.write('User-agent: %s\n' % str(self.headers['user-agent']))
-        fileHandle.write('Path: %s\n' % self.path)
+        fileHandle.write(bytes('Client: %s\n' % str(self.client_address)))
+        fileHandle.write(bytes('User-agent: %s\n' % str(self.headers['user-agent'])))
+        fileHandle.write(bytes('Path: %s\n' % self.path))
 
-        fileHandle.write('Form data:\n')
+        fileHandle.write(bytes('Form data:\n'))
 
         # Echo back information about what was posted in the form
         try:
@@ -1085,16 +1087,16 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                     file_data = field_item.file.read()
                     file_len = len(file_data)
                     del file_data
-                    fileHandle.write('\tUploaded %s as "%s" (%d bytes)\n' % (field, field_item.filename, file_len))
+                    fileHandle.write(bytes('\tUploaded %s as "%s" (%d bytes)\n' % (field, field_item.filename, file_len)))
                 else:
                     # Regular form value
-                    fileHandle.write('\t%s=%s\n' % (field, self.cgiFormDataPostFull[field].value))
+                    fileHandle.write(bytes('\t%s=%s\n' % (field, self.cgiFormDataPostFull[field].value)))
         except:
             pass
 
-        fileHandle.write('Content Data:\n')
+        fileHandle.write(bytes('Content Data:\n'))
         try:
-            fileHandle.write(self.cgiFormDataPostFull.file.read())
+            fileHandle.write(bytes(self.cgiFormDataPostFull.file.read()))
         except:
             pass
 
@@ -1107,10 +1109,10 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         self.end_headers()
 
         if (inclHTMLRedirect):
-            self.wfile.write ('''
+            self.wfile.write (bytes('''
 <META http-equiv="refresh" content="0;URL=''' + url + '''">
 <script type="text/javascript">window.location = "''' + url + '''"</script>
-''')
+''', "utf-8"))
 
     # otherHeaderDict is a dictionary with name, value pair
     def do_HEAD(self, mimetype='text/html; charset=UTF-8', turnOffCache=False, statusCode=200, otherHeaderDict=None, closeHeader=True):
@@ -1127,7 +1129,8 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
             for name, value in otherHeaderDict.items():
                 self.send_header(name, value)
 
-        if closeHeader:
+        if closeHeader and (self.headerClosed == False):
+            self.headerClosed = True
             self.end_headers()
 
     # return None on failure, of String on valid translation
@@ -1172,7 +1175,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
     def output (self, s):
         if not self.headerCalled:
             self.do_HEAD(turnOffCache=True)
-        else:
+        elif (not self.headerClosed):
             self.end_headers()
         self.wfile.write(bytes(s,"utf-8"))
 
