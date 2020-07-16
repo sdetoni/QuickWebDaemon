@@ -1172,13 +1172,16 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
 
         return self.templateRunAbsPath (fp, userVarsDict, checkFileChangedSecs)
 
-    def output (self, s):
+    def output(self, s):
         if not self.headerCalled:
             self.do_HEAD(turnOffCache=True)
         elif (not self.headerClosed):
             self.end_headers()
-        self.wfile.write(bytes(s,"utf-8"))
-
+        if type(s) == type(str()):
+            self.wfile.write(bytes(s, "utf-8"))
+        else:
+            self.wfile.write(s)
+            
     def isMimeType (self, filePath):
         # extract file extension so as to send the correct mime-type
         fileExt = '.' + filePath.split('.')[-1]
