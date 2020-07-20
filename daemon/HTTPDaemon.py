@@ -1177,11 +1177,21 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
             self.do_HEAD(turnOffCache=True)
         elif (not self.headerClosed):
             self.end_headers()
-        if type(s) == type(str()):
-            self.wfile.write(bytes(s, "utf-8"))
-        else:
-            self.wfile.write(s)
-            
+
+        try:
+            if type(s) == type(str()):
+                self.outputRaw (bytes(s, "utf-8"))
+            else:
+                self.outputRaw (s)
+        except Exception as e:
+            logging.error('HTTPWebServer.output failed output() at path: >' + self.path + '< ' + str(e))
+
+    def outputRaw(self, r):
+        try:
+            self.wfile.write(r)
+        except Exception as e:
+            logging.error('HTTPWebServer.outputRaw failed outputRaw() at path: >' + self.path + '< ' + str(e))
+
     def isMimeType (self, filePath):
         # extract file extension so as to send the correct mime-type
         fileExt = '.' + filePath.split('.')[-1]
@@ -1371,7 +1381,10 @@ def startDaemon (host_name = socket.gethostname(), port_number = 80, serve_via_s
 def stopDaemon ():
     global SERVERS
     for inst in SERVERS:
-        inst.HTTPDaemon.server_close()
+        try:
+            inst.HTTPDaemon.server_close()
+        except Exception as e:
+            pass
         logging.info ('HTTPDaemon.stopDaemon Server Stops - %s:%s' % (inst.host_name, inst.port_number))
 
     # Empty SERVERS instances
