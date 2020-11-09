@@ -1382,6 +1382,7 @@ def stopDaemon ():
     global SERVERS
     for inst in SERVERS:
         try:
+            inst.HTTPDaemon.shutdown()
             inst.HTTPDaemon.server_close()
         except Exception as e:
             pass
