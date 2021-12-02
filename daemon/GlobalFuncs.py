@@ -123,7 +123,8 @@ def AuthenticateValidateSession (httpd, sendHTTPLoginHeaderReq = True):
 
         # Create a new cookie session
         sessID = httpd.sessionCreate (timeout=60*5)
-        httpd.do_HEAD(turnOffCache=True, otherHeaderDict={'Set-Cookie':AuthSessionCOOKIEID + '=' + sessID}, closeHeader=False)
+        httpd.redirect(httpd.path, True, otherHeaderDict={'Set-Cookie': AuthSessionCOOKIEID + '=' + sessID})
+        return False
     return True
 
 def AuthenticateValidateAdminSession (httpd, sendHTTPLoginHeaderReq = True):
@@ -155,7 +156,8 @@ def AuthenticateValidateAdminSession (httpd, sendHTTPLoginHeaderReq = True):
 
         # Create a new cookie session
         sessID = httpd.sessionCreate (timeout=60*5)
-        httpd.do_HEAD(turnOffCache=True, otherHeaderDict={'Set-Cookie': AuthAdminSessionCOOKIEID + '=' + sessID}, closeHeader=False)
+        httpd.redirect(httpd.path, True, otherHeaderDict={'Set-Cookie': AuthAdminSessionCOOKIEID + '=' + sessID})
+        return False
     return True
 
 def AuthenticateLogoutUser (httpd):

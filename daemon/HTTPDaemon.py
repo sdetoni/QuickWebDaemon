@@ -891,7 +891,8 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         try:
             BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args)
         except Exception as e:
-            logging.error ('HTTPWebServer.__init__ ' + str(e))
+            if not 'certificate unknown' in str(e).lower():
+                logging.error ('HTTPWebServer.__init__ ' + str(e))
 
     def createRandomHash (self):
         r = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -1100,12 +1101,17 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         except:
             pass
 
-    def redirect(self, url, inclHTMLRedirect=False):
+    def redirect(self, url, inclHTMLRedirect=False, otherHeaderDict=None):
         if not url:
             return;
 
         self.send_response(302)
         self.send_header('Location', url)
+
+        if otherHeaderDict:
+            for name, value in otherHeaderDict.items():
+                self.send_header(name, value)
+
         self.end_headers()
 
         if (inclHTMLRedirect):
