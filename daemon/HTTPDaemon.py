@@ -20,9 +20,18 @@ import os
 import datetime
 import io
 
-
 # HTTPDaemon instances created
 SERVERS = []
+
+# -------------------------------------------------------------------
+
+def nvl (param, ifNone=''):
+    if not param:
+        return ifNone
+    return param
+
+def strSubtract (a, b):
+    return re.sub('^' + re.escape(nvl(b)), '', nvl(a, ''))
 
 # -------------------------------------------------------------------
 
@@ -826,6 +835,72 @@ def HTTPWebServerSessionPurge ():
 
 # ------------------------------------------------------------
 
+class MappingRules():
+    TYPE  = "type"; TYPE_RE = "regexp"; TYPE_REOPT = "regexp-opt"; TYPE_PYMATCH = "pymatch";
+    PYEVEL="pyeval"; REGEXP = "regexp"; SCRIPT = "script"; REGEXP_OPTS= "regexp_opts"; PYEVAL="eval"
+    rules = []
+    def __init__(self, filepath):
+        self.rules = []
+        commaESC = '~'+chr(7)+chr(7)+'~'
+        mrf = open (filepath, 'U')
+        try:
+            for line in mrf.readlines():
+                line = line.replace('\t', ' ').strip()
+                # ignore comment lines
+                if line == "" or line[0] == "#":
+                    continue
+
+                # escape, parse, unescape
+                line = line.replace(',,', commaESC)
+                s = line.split(',')
+                for i in range(len(s)):
+                    s[i] = s[i].replace(commaESC, ',')
+
+                # basic parsing of parameters
+                if len(s) > 1:
+                    if s[0].lower().strip() in (self.TYPE_RE):
+                        if len(s) == 3:
+                            self.rules.append({self.TYPE: self.TYPE_RE, self.REGEXP : s[1].strip(), self.SCRIPT : s[2].strip()})
+                            continue
+                    if s[0].lower().strip() in (self.TYPE_REOPT):
+                        if len(s) == 4:
+                            self.rules.append({self.TYPE: self.TYPE_REOPT, self.REGEXP : s[1].strip(), self.SCRIPT : s[2].strip(), self.REGEXP_OPTS : s[3].strip()})
+                            continue
+                    if s[0].lower().strip() in (self.TYPE_PYMATCH):
+                        if len(s) == 3:
+                            self.rules.append({self.TYPE: self.TYPE_PYMATCH, self.PYEVAL: s[1].strip(), self.SCRIPT: s[2].strip()})
+                            continue
+
+                logging.error("MappingRules: Malformed mapping rule : ->" + line + "<-")
+            # end for
+        except Exception as inst:
+            logging.error('MappingRules: Failed loading mapping rules file ' + self.filepath + ' ' + str(traceback.format_exc()))
+
+    def applyRules (self, osWebpageDir, basepath, querystring, defaultPath=''):
+        #  basePath='/metadata/test/' querystring='program.py?erwerwer'
+        logging.debug ("MappingRules.applyRules basePath='" + basepath + "' querystring='" + querystring + "'")
+
+        if not osWebpageDir:
+            logging.error("MappingRules.applyRules osWebpageDir is blank/none, internal error!")
+            return None
+        rtnScript = ''
+        for rule in self.rules:
+            # apply files based upon file path sent
+            if (rule[self.TYPE] == self.TYPE_RE) and re.match(rule[self.REGEXP], querystring):
+                rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
+            elif (rule[self.TYPE] == self.TYPE_REOPT) and re.match(rule[self.REGEXP], querystring, eval(rule[self.REGEXP_OPTS])):
+                rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
+            elif (rule[self.TYPE] == self.TYPE_PYMATCH) and eval(rule[self.PYEVAL]):
+                rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
+
+            if rtnScript:
+                logging.debug("MappingRules.applyRules matched rule : " + str(rule))
+                logging.debug("MappingRules.applyRules returning : " + rtnScript)
+                return rtnScript # build return path for script
+
+        return defaultPath
+
+
 class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
     host_name     = None
     port_number   = None
@@ -847,6 +922,16 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
     headerClosed        = False
 
     sessionCookieJar    = None
+
+    defaultRunFiles     = ('index.py', 'index.ty')
+    mappingRulesFile    = '_mapping_rules_'
+    noInternetAccess    = ('_hidden_', '_templates_', mappingRulesFile)
+    mappingRules        = None
+
+    # basic parsing of the self.path url path
+    queryBasePath       = ''
+    queryScript         = ''
+    queryString         = ''
 
     # create our own custom constructor
     def __init__(self, host_name, port_number, serve_via_ssl, ssl_server_pem, appHome, homeScriptName, mimeTypeFilename, *args):
@@ -881,6 +966,10 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         self.ssl_server_pem      = ssl_server_pem
         self.headerCalled        = False
         self.headerClosed        = False
+        self.mappingRules        = None
+        self.queryBasePath       = ''
+        self.queryScript         = ''
+        self.queryString         = ''
 
         if self.serve_via_ssl:
             self.protocol = 'https'
@@ -892,7 +981,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
             BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args)
         except Exception as e:
             if not 'certificate unknown' in str(e).lower():
-                logging.error ('HTTPWebServer.__init__ ' + str(e))
+                logging.error ('HTTPWebServer.__init__ ' + str(e) + ' ' + str(traceback.format_exc()))
 
     def createRandomHash (self):
         r = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -1103,7 +1192,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
 
     def redirect(self, url, inclHTMLRedirect=False, otherHeaderDict=None):
         if not url:
-            return;
+            return
 
         self.send_response(302)
         self.send_header('Location', url)
@@ -1223,11 +1312,33 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
             return None
 
         hiddenAccessPath = fullAccessPath[len(homeAccessPath):].lower()
-        for noAccess in ('_hidden_', '_templates_'):
+        for noAccess in self.noInternetAccess:
             if ((re.search(noAccess+"$", hiddenAccessPath)) or (os.path.sep + noAccess + os.path.sep in hiddenAccessPath)):
                 return None
 
         return fullAccessPath
+
+    # returns tuple: (mapping file dir, mapping file name)
+    def getLocalMappingRulesFile (self, filePath):
+        fp       =  nvl(self.getSafeHTMLPath(filePath), os.path.abspath(self.homeDir))
+        basePath = ''
+
+        # without path manipulation e.g https://blah.com/someapp/somewebpage.py -> <install path>/someapp/somewebpage.py
+        # or                            https://blah.com/someapp                -> <install path>/someapp
+        if os.path.isdir(fp):
+            basePath = fp
+            if os.path.exists(fp + os.path.sep + self.mappingRulesFile):
+                return (basePath, fp + os.path.sep + self.mappingRulesFile)
+
+        # with path manipulation e.g https://blah.com/someapp/somewebpage.py to <install path>/someapp
+        fp = nvl(self.getSafeHTMLPath(nvl(os.path.dirname(filePath)).rstrip(os.path.sep)), os.path.abspath(self.homeDir))
+
+        if os.path.isdir(fp):
+            basePath = fp
+            if os.path.exists(fp + os.path.sep + self.mappingRulesFile):
+                return (basePath, fp + os.path.sep + self.mappingRulesFile)
+
+        return basePath, None
 
     def execfile(self, filepath, globals=None, locals=None):
         if globals is None:
@@ -1244,9 +1355,9 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         try:
             """Respond to a GET request."""
             filePath = self.path.split('?')
-            queryPath = ''
+            self.queryString = ''
             if (len(filePath) > 1):
-                queryPath = filePath[1]
+                self.queryString = filePath[1]
 
             filePath = urllib.parse.unquote_plus(filePath[0])
             fullAccessPath = self.getSafeHTMLPath(filePath, self.homeScriptName)
@@ -1263,46 +1374,89 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
             # load get Cookies from header
             self.getCookiesFromHeader()
 
-            if (re.search('.py$', fullAccessPath)): # run python *.py files
-                try:
-                    self.execfile(fullAccessPath)
-                except SystemExit as se:
-                    if se.code != 0:
-                        logging.error ('HTTPWebServer.do_GET (.py) (' + self.command + ') Abnormal page exit ' + str(se))
-                except IOError:
-                    logging.error ('HTTPWebServer.do_GET (.py) (' + self.command + ') Render page ' + filePath + ' not found! Accessing : ' + fullAccessPath)
-                    self.send_response(404)
-                    self.output("<html><h1>I/O Error: 404</h1></html>")
-                except Exception as err:
-                    logging.error ('HTTPWebServer.do_GET (.py) (' + self.command + ') Exception in ' + filePath + ' :: ' + str(traceback.format_exc()))
-                    self.send_response(500)
-                    self.output("<html><h1>Internal Error: 500</h1></html>")
-            elif (re.search('.ty$', fullAccessPath)): # run template *.ty files
-                try:
-                    self.templateRunAbsPath(fullAccessPath, {})
-                except SystemExit as se:
-                    if se.code != 0:
-                        logging.error ('HTTPWebServer.do_GET (.ty) (' + self.command + ') Abnormal page exit ' + str(se))
-                except IOError:
-                    logging.error ('HTTPWebServer.do_GET (.ty) (' + self.command + ') Render page ' + filePath + ' not found! Accessing : ' + fullAccessPath)
-                    self.send_response(404)
-                    self.output("<html><h1>I/O Error: 404</h1></html>")
-                except Exception as err:
-                    logging.error ('HTTPWebServer.do_GET (.ty)(' + self.command + ') Exception in ' + filePath + ' :: ' + str(traceback.format_exc()))
-                    self.send_response(500)
-                    self.output("<html><h1>Internal Error: 500</h1></html>")
-            else:
-                try:
-                    file = open(fullAccessPath, 'rb')
-                    self.send_response(200)
-                    self.send_header('Content-type', self.isMimeType (fullAccessPath));
-                    self.end_headers()
-                    self.wfile.write(file.read())
-                    file.close()
-                except IOError:
-                    logging.error ('HTTPWebServer.do_GET (' + self.command + ') File ' + filePath + ' not found/access denied! Accessing : ' + fullAccessPath)
-                    self.send_response(404)
-                    self.output("<html><h1>I/O Error: 404</h1></html>")
+            # ----------------- Mapping files processor -------------------
+            # load directory mapping rules file, returns tuple: (mapping file dir, mapping file name) from current path
+            mprDir, mprFile = self.getLocalMappingRulesFile (filePath)
+            if not mprFile: # if no mapping file found in current path, then apply default mappings from root path to allow global mappings, if it exists
+                mprDir, mprFile = self.getLocalMappingRulesFile('')
+
+            # subtract home path from webpage filesystem path, and convert it to url path current path
+            self.queryBasePath = strSubtract (mprDir, os.path.abspath(self.homeDir)).replace(os.path.sep, '/').strip('/')
+            if self.queryBasePath:
+                self.queryBasePath = '/' + self.queryBasePath + '/'
+
+            self.queryScript = strSubtract(self.path, self.queryBasePath).split('?')[0]
+            if self.queryScript.strip('/') == self.queryBasePath.strip('/'):
+                self.queryScript = ''
+
+            if mprFile:
+                logging.info("HTTPWebServer.do_GET loading mapping rules file '" + mprFile + "'")
+                self.mappingRules = MappingRules (mprFile)
+
+            if self.mappingRules:
+                # apply mapping rules to  current url path and convert to script name to execute
+                fullAccessPath = self.mappingRules.applyRules (mprDir, self.queryBasePath, strSubtract(self.path, self.queryBasePath), fullAccessPath)
+            # ------------------------------------------------------------
+
+            # setup default processing based upon empty directory paths e.g. https://blah.com/blah or https://blah.com/blah/
+            defaultsAccessPath = fullAccessPath
+            defaultsIdx        = -1
+            while (True):
+                defaultsRetry = False
+                if (re.search('.py$', fullAccessPath)): # run python *.py files
+                    try:
+                        self.execfile(fullAccessPath)
+                    except SystemExit as se:
+                        if se.code != 0:
+                            logging.error ('HTTPWebServer.do_GET (.py) (' + self.command + ') Abnormal page exit ' + str(se))
+                    except IOError:
+                        logging.error ('HTTPWebServer.do_GET (.py) (' + self.command + ') Render page ' + filePath + ' not found! Accessing : ' + fullAccessPath)
+                        self.send_response(404)
+                        self.output("<html><h1>I/O Error: 404</h1></html>")
+                    except Exception as err:
+                        logging.error ('HTTPWebServer.do_GET (.py) (' + self.command + ') Exception in ' + filePath + ' :: ' + str(traceback.format_exc()))
+                        self.send_response(500)
+                        self.output("<html><h1>Internal Error: 500</h1></html>")
+                elif (re.search('.ty$', fullAccessPath)): # run template *.ty files
+                    try:
+                        self.templateRunAbsPath(fullAccessPath, {})
+                    except SystemExit as se:
+                        if se.code != 0:
+                            logging.error ('HTTPWebServer.do_GET (.ty) (' + self.command + ') Abnormal page exit ' + str(se))
+                    except IOError:
+                        logging.error ('HTTPWebServer.do_GET (.ty) (' + self.command + ') Render page ' + filePath + ' not found! Accessing : ' + fullAccessPath)
+                        self.send_response(404)
+                        self.output("<html><h1>I/O Error: 404</h1></html>")
+                    except Exception as err:
+                        logging.error ('HTTPWebServer.do_GET (.ty)(' + self.command + ') Exception in ' + filePath + ' :: ' + str(traceback.format_exc()))
+                        self.send_response(500)
+                        self.output("<html><h1>Internal Error: 500</h1></html>")
+                else:
+                    try:
+                        # determine if fullAccessPath is pointing to a standard file, if so, load it and send it out...
+                        file = open(fullAccessPath, 'rb')
+                        self.send_response(200)
+                        self.send_header('Content-type', self.isMimeType (fullAccessPath));
+                        self.end_headers()
+                        self.wfile.write(file.read())
+                        file.close()
+                    except IOError:
+                        # -------- Default File/Scripts to run ---------
+                        # test if file is of type directory, if so then process default files to run
+                        if (defaultsIdx < len(self.defaultRunFiles)-1) and os.path.isdir(defaultsAccessPath):
+                            defaultsRetry  = True
+                            defaultsIdx   += 1
+                            fullAccessPath = defaultsAccessPath + os.path.sep + self.defaultRunFiles[defaultsIdx]
+                        else:
+                            logging.error ('HTTPWebServer.do_GET (' + self.command + ') File ' + filePath + ' not found/access denied! Accessing : ' + fullAccessPath)
+                            self.send_response(404)
+                            self.output("<html><h1>I/O Error: 404</h1></html>")
+
+                # retry file execution for default files...
+                if defaultsRetry:
+                    continue
+
+                break # exit loop
         finally:
             self.rfile.flush()
             self.wfile.flush()
@@ -1374,7 +1528,7 @@ class HTTPInstances (threading.Thread):
 
 # #######################################################################################
 
-def startDaemon (host_name = socket.gethostname(), port_number = 80, serve_via_ssl = False, ssl_server_pem = None, homeDir ='./webapp', homeScriptName ='index.py', mimeTypeFilename ='./config/mimetypes.txt', threaded = False):
+def startDaemon (host_name = socket.gethostname(), port_number = 80, serve_via_ssl = False, ssl_server_pem = None, homeDir ='./webapp', homeScriptName = 'index.py', mimeTypeFilename ='./config/mimetypes.txt', threaded = False):
     logging.debug ('HTTPDaemon.startDaemon ')
 
     inst = HTTPInstances (host_name, port_number, serve_via_ssl, ssl_server_pem, homeDir, homeScriptName, mimeTypeFilename)

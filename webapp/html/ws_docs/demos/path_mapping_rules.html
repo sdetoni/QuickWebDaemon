@@ -1,0 +1,19 @@
+<h2>Implement URL patch mapping rules to scripts Example</h2>
+<p>The webserver will load _mapping_rules_ from the current path.
+If matches on a url path based using regular expressions succeed then it runs the associated script in the mapping rule.</p>
+<p>If you place a _mapping_rules_ file in the root website, then it will map to any path. If a _mapping_rules_ file exists in the sub-directory of a website, it will take 
+precedence over a root defined _mapping_rules_</p>
+<p>If no _mapping_rules_ rule is defined, then the web server will try to execute index.py, or index.ty if the url path matches a website's directory; working just like the root
+path default of a website.</p>
+<p>To escape the comma char, place 2 commas next to each other.</p>
+<p><pre>
+# comment
+regexp, &lt;regexp matching relative path&gt;, &lt;web server template/python file in current directory to run&gt;
+regexp-opt, &lt;regexp matching relative path&gt;, &lt;web server template/python file in current directory to run&gt;, &lt;python regexp options&gt;
+pymatch, &lt;python code matching on variables: basepath, querystring&gt;, &lt;web server template/python file in current directory to run&gt;
+</pre></p>
+<iframe src="demos/metadata/randomReference.py" class="iframe_style" onload="resizeIframe(this)"></iframe><br>
+<h5>Source:metadata\_mapping_rules_</h5>
+<iframe src="code_viewer.html?file=demos%2Fviewsrc.py%3Fpage%3D_mapping_rules_.example&type=ace/mode/python" class="iframe_style" onload="resizeIframe(this)" style="min-height:400px"></iframe>
+
+&amp;lt;

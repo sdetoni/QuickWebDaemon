@@ -1,0 +1,27 @@
+# structure of the mapping file:
+#  regexp, <regexp matching relative path>, <web server template/python file in current directory to run>
+#  regexp-opt, <regexp matching relative path>, <web server template/python file in current directory to run>, <python regexp options>
+#  pymatch, <python code matching on variables: basepath, querystring>, <web server template/python file in current directory to run>
+#
+# to escape the comma char, place 2 commas next to each other.
+#
+#  REST examples:
+#      regexp, .*, index.ty
+#      regexp, .*, index.py
+#
+#  CGI examples:
+#      regexp, index, index.py
+#      regexp, hello, index.py
+#
+#      regexp,     override.py, new_override.py
+#      regexp-opt, override.py, new_override.py, re.IGNORECASE
+#      pymatch,    (override.py, new_override.py, re.IGNORECASE
+# regexp,     mapping\.info, index.py
+# regexp-opt, mapping\.info, index.py, re.IGNORECASE
+regexp-opt, randomReference.py, index.py, re.IGNORECASE
+regexp, .*, index.py
+regexp, old_metadata\.*, metadata\index.py
+
+#match on https://blah.com/metadata/test,test
+pymatch, querystring.lower() == 'test,,test' , index.py
+regexp, test,,test, index.py
