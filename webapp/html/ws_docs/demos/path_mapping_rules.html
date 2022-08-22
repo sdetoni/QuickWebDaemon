@@ -8,12 +8,28 @@ path default of a website.</p>
 <p>To escape the comma char, place 2 commas next to each other.</p>
 <p><pre>
 # comment
-regexp, &lt;regexp matching relative path&gt;, &lt;web server template/python file in current directory to run&gt;
-regexp-opt, &lt;regexp matching relative path&gt;, &lt;web server template/python file in current directory to run&gt;, &lt;python regexp options&gt;
-pymatch, &lt;python code matching on variables: basepath, querystring&gt;, &lt;web server template/python file in current directory to run&gt;
+regexp,          &lt;regexp HTTP command&gt;, &lt;regexp matching relative path&gt;, &lt;web server template/python file in current directory to run&gt;
+regexp-opt,      &lt;regexp HTTP command&gt;, &lt;regexp matching relative path&gt;, &lt;web server template/python file in current directory to run&gt;, &lt;python regexp options&gt;
+pymatch,         &lt;regexp HTTP command&gt;, &lt;python code matching on variables: basepath, querytomatch&gt;, &lt;web server template/python file in current directory to run&gt;
+
+regexp-redirect,     &lt;regexp HTTP command&gt;, &lt;regexp matching relative path&gt;, &lt;url to redirect, uses regex substitutions&gt;
+regexp-redirect-opt, &lt;regexp HTTP command&gt;, &lt;regexp matching relative path&gt;, &lt;url to redirect, uses regex substitutions&gt;, &lt;python regexp options&gt;
+pymatch-redirect,    &lt;regexp HTTP command&gt;, &lt;python code matching on variables: basepath, querytomatch&gt;, &lt;url to redirect, uses regex substitutions&gt;
+
+To escape the comma char, place 2 commas next to each other.
+
+redirect regex redirect substitutions:
+  Example url: https://host.name.com/myapp/mypage.py?param=123
+     {%HOSTNAME_NAME%}   : host.name.com
+     {%PORT_NUMBER%}     : 443, 80, ...
+     {%PROTOCOL%}        : https, http
+     {%COMMAND%}         : GET, POST, DELETE ...
+     {%PATH%}            : '/myapp/mypage.py?param=123'
+     {%QUERYSTRING%}     : 'param=123'
+     {%QUERYBASEPATH%}   : '/myapp'
+     {%QUERYNAME%}       : 'mypage.py'
+
 </pre></p>
 <iframe src="demos/metadata/randomReference.py" class="iframe_style" onload="resizeIframe(this)"></iframe><br>
 <h5>Source:metadata\_mapping_rules_</h5>
 <iframe src="code_viewer.html?file=demos%2Fviewsrc.py%3Fpage%3D_mapping_rules_.example&type=ace/mode/python" class="iframe_style" onload="resizeIframe(this)" style="min-height:400px"></iframe>
-
-&amp;lt;

@@ -7,7 +7,11 @@
     <list default="true" id="ea08d542-335f-496f-827f-8ef22b954951" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daemon/HTTPDaemon.py" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/HTTPDaemon.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapp/html/ws_docs/docs.html" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/html/ws_docs/docs.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/html/_mapping_rules_" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/html/_mapping_rules_" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/html/ws_docs/demos/_mapping_rules_.example" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/html/ws_docs/demos/_mapping_rules_.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/html/ws_docs/demos/metadata/_mapping_rules_" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/html/ws_docs/demos/metadata/_mapping_rules_" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/html/ws_docs/demos/metadata/index.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/html/ws_docs/demos/metadata/index.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/html/ws_docs/demos/path_mapping_rules.html" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/html/ws_docs/demos/path_mapping_rules.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,6 +67,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/daemon/HTTPDaemon.py" root0="FORCE_HIGHLIGHTING" />
@@ -123,6 +135,9 @@
         <option value="$PROJECT_DIR$/webapp/html/ws_docs/demos/session_logout.ty" />
       </list>
     </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="476" />
@@ -320,10 +335,19 @@
   <component name="XDebuggerManager">
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="tok" />
-        <watch expression="self.src[self.srcLexPos:]" language="Python" />
-        <watch expression="self.tokens[tok]" language="Python" />
-        <watch expression="lexS[&quot;next&quot;]" />
+        <watch expression="re.match(rule[self.REGEXP], querystring)" />
+        <watch expression="rule[self.REGEXP]" />
+        <watch expression="querystring" />
+        <watch expression="strSubtract(self.path, re.sub('([^/]+)/?$', '', self.path))" language="Python" />
+        <watch expression="self.path" language="Python" />
+        <watch expression="re.sub('(.*)(\?.*)', r&quot;\1&quot;, strSubtract(self.path, re.sub('([^/]+)/?$', '', self.path)))" language="Python" />
+        <watch expression="re.sub('[^/]+/(?$)', '\1', '/sdfsdfsdfs/sdsada.asdasd')" language="Python" />
+        <watch expression="self.path" language="Python" />
+        <watch expression="str" />
+        <watch expression="cmds[k]" />
+        <watch expression="re.sub(k, cmds[k], str)" />
+        <watch expression=" re.sub(k, cmds[k], str)" />
+        <watch expression="str(cmds[k])" />
       </configuration>
     </watches-manager>
   </component>
