@@ -29,7 +29,7 @@ while GF.DaemonRunningState == GF.DAEMON_RUNMODE_RUN:
             thrdDaemon = True
         HTTPDaemon.startDaemon (host_name        = GF.Config.getSettingStr  ('HTTP_SERVERNAME',         socket.gethostname()),
                                 port_number      = httpPort,
-                                homeDir          = GF.Config.getSettingStr  ('HTTP_HOME_DIRECTORY',     './html'),
+                                homeDir          = GF.Config.getSettingStr  ('HTTP_HOME_DIRECTORY',     './webapps'),
                                 homeScriptName   = GF.Config.getSettingStr  ('HTTP_HOME_SCRIPT_NAME',   'index.py'),
                                 mimeTypeFilename = GF.Config.getSettingStr  ('HTTP_MIMETYPES_FILENAME', './config/mimetypes.txt'),
                                 serve_via_ssl    = False,
@@ -40,9 +40,10 @@ while GF.DaemonRunningState == GF.DAEMON_RUNMODE_RUN:
         HTTPDaemon.startDaemon (host_name        = GF.Config.getSettingStr  ('HTTP_SERVERNAME',         socket.gethostname()),
                                 port_number      = GF.Config.getSettingValue('HTTPS_PORT',              4430),
                                 ssl_server_pem   = GF.Config.getSettingStr  ('HTTPS_SSL_SERVER_PEM',    './config/server.pem'),
-                                homeDir          = GF.Config.getSettingStr  ('HTTP_HOME_DIRECTORY',     './html'),
+                                homeDir          = GF.Config.getSettingStr  ('HTTP_HOME_DIRECTORY',     './webapps'),
                                 homeScriptName   = GF.Config.getSettingStr  ('HTTP_HOME_SCRIPT_NAME',   'index.py'),
                                 mimeTypeFilename = GF.Config.getSettingStr  ('HTTP_MIMETYPES_FILENAME', './config/mimetypes.txt'),
+
                                 serve_via_ssl    = True,
                                 threaded         = False)
 
