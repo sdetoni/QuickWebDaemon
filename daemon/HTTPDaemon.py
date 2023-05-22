@@ -1384,7 +1384,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         homeAccessPath   = os.path.abspath(self.homeDir)
         fullAccessPath   = os.path.abspath(self.homeDir + os.path.sep + (filePath if filePath else ''))
 
-        if not fullAccessPath.startswith(homeAccessPath + os.path.sep):
+        if not (fullAccessPath + os.path.sep).startswith(homeAccessPath + os.path.sep):
             return None
 
         hiddenAccessPath = fullAccessPath[len(homeAccessPath):].lower()
@@ -1436,7 +1436,8 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                 self.queryString = filePath[1]
 
             filePath = urllib.parse.unquote_plus(filePath[0])
-            fullAccessPath = self.getSafeHTMLPath(filePath, self.homeScriptName)
+            # fullAccessPath = self.getSafeHTMLPath(filePath, self.homeScriptName)
+            fullAccessPath = self.getSafeHTMLPath(filePath, '')
 
             if not fullAccessPath:
                 logging.error('HTTPWebServer.do_GET (' + self.command + ') failed access request at path: >' + filePath +  '<  to file  >' + os.path.abspath(self.homeDir + os.path.sep + filePath) + '<')
@@ -1490,9 +1491,14 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                         if se.code != 0:
                             logging.error ('HTTPWebServer.do_GET (.py) (' + self.command + ') Abnormal page exit ' + str(se))
                     except IOError:
-                        logging.error ('HTTPWebServer.do_GET (.py) (' + self.command + ') Render page ' + filePath + ' not found! Accessing : ' + fullAccessPath)
-                        self.send_response(404)
-                        self.output("<html><h1>I/O Error: 404</h1></html>")
+                        if (defaultsIdx < len(self.defaultRunFiles)-1) and os.path.isdir(defaultsAccessPath):
+                            defaultsRetry  = True
+                            defaultsIdx   += 1
+                            fullAccessPath = defaultsAccessPath + os.path.sep + self.defaultRunFiles[defaultsIdx]
+                        else:
+                            logging.error ('HTTPWebServer.do_GET (.py) (' + self.command + ') Render page ' + filePath + ' not found! Accessing : ' + fullAccessPath)
+                            self.send_response(404)
+                            self.output("<html><h1>I/O Error: 404</h1></html>")
                     except Exception as err:
                         logging.error ('HTTPWebServer.do_GET (.py) (' + self.command + ') Exception in ' + filePath + ' :: ' + str(traceback.format_exc()))
                         self.send_response(500)
