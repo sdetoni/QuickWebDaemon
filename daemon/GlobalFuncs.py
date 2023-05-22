@@ -1,4 +1,5 @@
 import logging
+import logging.handlers
 import sys
 import ConfigLoader
 import HTTPDaemon
@@ -57,18 +58,20 @@ def setLogging (logFilename, logLevel, logSize, logNum, multiFileLogging=False):
 
     root.setLevel(level=logLevel)
 
-    try:
-        rotloghand = logging.handlers.RotatingFileHandler(logFilename, maxBytes=logSize, backupCount=logNum)
-        rotloghand.setFormatter(ColouredLogFormatter("%(asctime)s:%(levelname)s:%(message)s", datefmt='%H:%M:%S'))
-        root.addHandler(rotloghand)
-    except:
-        pass
-
     # add stdout logging as well as file logging...
     ch = logging.StreamHandler(sys.stdout)
     ch.setFormatter(ColouredLogFormatter("%(asctime)s:%(levelname)s:%(message)s", datefmt='%H:%M:%S'))
     ch.setLevel(logLevel)
     root.addHandler(ch)
+
+    try:
+        rotloghand = logging.handlers.RotatingFileHandler(logFilename, maxBytes=logSize, backupCount=logNum)
+        rotloghand.setFormatter(ColouredLogFormatter("%(asctime)s:%(levelname)s:%(message)s", datefmt='%H:%M:%S'))
+        root.addHandler(rotloghand)
+    except Exception as e:
+        logging.error(f"Failed setting file logging for {logFilename}")
+        logging.error(f"Error {str(e)}")
+
 
 # ------------------ Web Session Authentication ----------------------------
 
