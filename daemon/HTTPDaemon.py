@@ -1322,26 +1322,38 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
             return None
         return outputStr.getvalue()
 
-    def templateRunAbsPath (self, fullpathTemplateFilename, userVarsDict, checkFileChangedSecs=10):
+    def templateRunAbsPath (self, fullpathTemplateFilename, userVarsDict={}, checkFileChangedSecs=10, rtnStr=False):
         s = self.templateStr (fullpathTemplateFilename, userVarsDict, checkFileChangedSecs)
         if s != None:
+            if rtnStr:
+                return s
             self.output(s)
             return True
         return False
 
-    # returns true/false if successful output, runs via _templates_ directory within the self.path
+    # returns true/false if successful output, runs via relative directory within the self.path
     # access request
-    def templateRun (self, templateName, userVarsDict, checkFileChangedSecs=10):
+    def templateRunRelPath (self, templateName, userVarsDict={}, checkFileChangedSecs=10, rtnStr=False):
         filePath = self.path.split('?')
         filePath = urllib.parse.unquote_plus(filePath[0])
-        os.path.abspath(self.homeDir + filePath)
+        fullAccessPath  = os.path.abspath(self.homeDir + filePath)
+        fp              = os.path.dirname(fullAccessPath) + os.path.sep + templateName
+        if not fp.startswith(os.path.abspath(self.homeDir)+ os.path.sep):
+            logging.error('HTTPWebServer.templateRunRelPath (' + self.command + ') failed access request at path: >' + filePath +  '<  to file  >' + fp + '<')
+            return None
+        return self.templateRunAbsPath (fp, userVarsDict, checkFileChangedSecs, rtnStr)
+
+    # returns true/false if successful output, runs via _templates_ directory within the self.path
+    # access request
+    def templateRun (self, templateName, userVarsDict={}, checkFileChangedSecs=10, rtnStr=False):
+        filePath = self.path.split('?')
+        filePath = urllib.parse.unquote_plus(filePath[0])
         fullAccessPath  = os.path.abspath(self.homeDir + filePath)
         fp              = os.path.dirname(fullAccessPath) + os.path.sep + '_templates_' + os.path.sep + templateName
         if not fp.startswith(os.path.abspath(self.homeDir)+ os.path.sep):
             logging.error('HTTPWebServer.templateRun (' + self.command + ') failed access request at path: >' + filePath +  '<  to file  >' + fp + '<')
             return None
-
-        return self.templateRunAbsPath (fp, userVarsDict, checkFileChangedSecs)
+        return self.templateRunAbsPath (fp, userVarsDict, checkFileChangedSecs, rtnStr)
 
     def output(self, s):
         if not self.headerCalled:
@@ -1518,6 +1530,13 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                         self.send_response(500)
                         self.output("<html><h1>Internal Error: 500</h1></html>")
                 else:
+                    # -------- Default File/Scripts to run ---------
+                    # test if file is of type directory, if so then process default files to run
+                    if (defaultsIdx < len(self.defaultRunFiles) - 1) and os.path.isdir(defaultsAccessPath):
+                        defaultsRetry = True
+                        defaultsIdx += 1
+                        fullAccessPath = defaultsAccessPath + os.path.sep + self.defaultRunFiles[defaultsIdx]
+
                     try:
                         # determine if fullAccessPath is pointing to a standard file, if so, load it and send it out...
                         file = open(fullAccessPath, 'rb')
@@ -1527,16 +1546,12 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                         self.wfile.write(file.read())
                         file.close()
                     except IOError:
-                        # -------- Default File/Scripts to run ---------
-                        # test if file is of type directory, if so then process default files to run
-                        if (defaultsIdx < len(self.defaultRunFiles)-1) and os.path.isdir(defaultsAccessPath):
-                            defaultsRetry  = True
-                            defaultsIdx   += 1
-                            fullAccessPath = defaultsAccessPath + os.path.sep + self.defaultRunFiles[defaultsIdx]
-                        else:
-                            logging.error ('HTTPWebServer.do_GET (' + self.command + ') File ' + filePath + ' not found/access denied! Accessing : ' + fullAccessPath)
-                            self.send_response(404)
-                            self.output("<html><h1>I/O Error: 404</h1></html>")
+                        if defaultsRetry:
+                            continue
+
+                        logging.error ('HTTPWebServer.do_GET (' + self.command + ') File ' + filePath + ' not found/access denied! Accessing : ' + fullAccessPath)
+                        self.send_response(404)
+                        self.output("<html><h1>I/O Error: 404</h1></html>")
 
                 # retry file execution for default files...
                 if defaultsRetry:
