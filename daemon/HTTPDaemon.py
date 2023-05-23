@@ -1348,7 +1348,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
     def templateRun (self, templateName, userVarsDict={}, checkFileChangedSecs=10, rtnStr=False):
         filePath = self.path.split('?')
         filePath = urllib.parse.unquote_plus(filePath[0])
-        fullAccessPath  = os.path.abspath(self.homeDir + filePath)
+        fullAccessPath  = os.path.abspath(self.homeDir + filePath) + os.path.sep
         fp              = os.path.dirname(fullAccessPath) + os.path.sep + '_templates_' + os.path.sep + templateName
         if not fp.startswith(os.path.abspath(self.homeDir)+ os.path.sep):
             logging.error('HTTPWebServer.templateRun (' + self.command + ') failed access request at path: >' + filePath +  '<  to file  >' + fp + '<')
@@ -1536,6 +1536,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                         defaultsRetry = True
                         defaultsIdx += 1
                         fullAccessPath = defaultsAccessPath + os.path.sep + self.defaultRunFiles[defaultsIdx]
+                        continue
 
                     try:
                         # determine if fullAccessPath is pointing to a standard file, if so, load it and send it out...
