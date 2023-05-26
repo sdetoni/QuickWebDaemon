@@ -1214,7 +1214,17 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                 # convert from field storage to normal dictionary list
                 try:
                     for item in self.cgiFormDataPostFull.keys():
-                        self.cgiFormData[item] = self.cgiFormDataPostFull[item].value
+                        if re.match('.*\[\]$',item):
+                            arry     = []
+                            itemArry = item.rstrip('[]')
+                            if isinstance(self.cgiFormDataPostFull[item], list):
+                                for itema in self.cgiFormDataPostFull[item]:
+                                    arry.append(itema.value)
+                            else:
+                                arry.append(self.cgiFormDataPostFull[item].value)
+                            self.cgiFormData[itemArry] = arry
+                        else:
+                            self.cgiFormData[item] = self.cgiFormDataPostFull[item].value
                 except:
                     pass
 
@@ -1350,7 +1360,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         filePath = urllib.parse.unquote_plus(filePath[0])
         fullAccessPath = os.path.abspath(self.homeDir + filePath) + os.path.sep
         if filePath.endswith('/'):
-            fp              = os.path.realpath(fullAccessPath) + os.path.sep + '_templates_' + os.path.sep + templateName
+            fp = os.path.realpath(fullAccessPath) + os.path.sep + '_templates_' + os.path.sep + templateName
         else:
             fp = os.path.dirname(os.path.realpath(fullAccessPath)) + os.path.sep + '_templates_' + os.path.sep + templateName
         if not fp.startswith(os.path.abspath(self.homeDir)+ os.path.sep):
