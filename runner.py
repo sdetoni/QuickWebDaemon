@@ -1,8 +1,12 @@
+#!/usr/bin/python3.8
 '''
 ####################################################
 # Written by Steven De Toni 2019
 ####################################################
 '''
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), "daemon"))
+
 import daemon.HTTPDaemon  as HTTPDaemon
 import daemon.GlobalFuncs as GF
 import socket
@@ -12,6 +16,8 @@ import logging
 # handle default strings and utf8 and not 7bit ascii
 #reload(sys)
 #sys.setdefaultencoding('utf8')
+
+
 
 # Main web server loop to init, run, shutdown
 GF.DaemonRunningState = GF.DAEMON_RUNMODE_RUN
@@ -43,7 +49,6 @@ while GF.DaemonRunningState == GF.DAEMON_RUNMODE_RUN:
                                 homeDir          = GF.Config.getSettingStr  ('HTTP_HOME_DIRECTORY',     './webapps'),
                                 homeScriptName   = GF.Config.getSettingStr  ('HTTP_HOME_SCRIPT_NAME',   'index.py'),
                                 mimeTypeFilename = GF.Config.getSettingStr  ('HTTP_MIMETYPES_FILENAME', './config/mimetypes.txt'),
-
                                 serve_via_ssl    = True,
                                 threaded         = False)
 
