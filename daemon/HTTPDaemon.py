@@ -840,13 +840,35 @@ class MappingRules():
     TYPE_RE_REDIRT = "regexp-redirect";    TYPE_REOPT_REDIRT = "regexp-opt-redirect";    TYPE_PYMATCH_REDIRT = "pymatch-redirect";
     PYEVEL="pyeval"; REGEXP = "regexp"; SCRIPT = "script"; REGEXP_OPTS= "regexp_opts"; PYEVAL="eval"; HTTPCMD_RE= "httpcmd_re";
 
-    rules = []
-    debug = False
-    def __init__(self, filepath):
-        self.rules = []
-        commaESC = '~'+chr(7)+chr(7)+'~'
-        mrf = open (filepath, 'U')
-        self.debug = False
+    commaESC = '~' + chr(7) + chr(7) + '~'
+    filepath = ''
+    rules    = []
+    debug    = False
+
+    checkFileChangedSecs = None # Reduce parsing time check for file change every checkFileChangedSecs
+    lastCheckFileChanged = None # Store last time check for file change
+    lastFileChangedTime  = None # Store template file modified date/time
+
+    def __init__(self, filepath, checkFileChangedSecs=10):
+        self.filepath             = filepath
+        self.checkFileChangedSecs = checkFileChangedSecs
+        self.checkCache()
+    def checkCache (self):
+        if self.lastCheckFileChanged:
+            if ((datetime.datetime.now() - self.lastCheckFileChanged).total_seconds() >= self.checkFileChangedSecs):
+                self.lastCheckFileChanged = datetime.datetime.now()
+                if os.path.getmtime(self.filepath) > self.lastFileChangedTime:
+                    logging.debug(f"MappingRules.checkCache : file ->{self.filepath}<- has changed!")
+                else:
+                    logging.debug(f"MappingRules.checkCache exiting file change : file ->{self.filepath}")
+                    return
+            else:
+                logging.debug(f"MappingRules.checkCache exiting cache no-change : file ->{self.filepath}")
+                return
+
+        self.rules    = []
+        self.debug    = False
+        mrf           = open (self.filepath, 'U')
         try:
             for line in mrf.readlines():
                 line = line.replace('\t', ' ').strip()
@@ -855,10 +877,10 @@ class MappingRules():
                     continue
 
                 # escape, parse, unescape
-                line = line.replace(',,', commaESC)
+                line = line.replace(',,', self.commaESC)
                 s = line.split(',')
                 for i in range(len(s)):
-                    s[i] = s[i].replace(commaESC, ',')
+                    s[i] = s[i].replace(self.commaESC, ',')
 
                 # basic parsing of parameters
                 if len(s) > 1:
@@ -901,12 +923,17 @@ class MappingRules():
         except Exception as inst:
             logging.error('MappingRules: Failed loading mapping rules file ' + self.filepath + ' ' + str(traceback.format_exc()))
 
+        if self.rules:
+            self.lastFileChangedTime  = os.path.getmtime(self.filepath)
+            self.lastCheckFileChanged = datetime.datetime.now()
+
     def replaceHTTPVars (self, httpd, replStr):
         cmds = { 'HOSTNAME_NAME' : httpd.host_name,
                  'PORT_NUMBER': httpd.port_number,
                  'PROTOCOL': httpd.protocol,
                  'COMMAND': httpd.command,
                  'PATH': httpd.path,
+                 'BASEPATH' : httpd.queryBasePath,
                  'QUERYSTRING': httpd.queryString,
                  'QUERYBASEPATH': re.sub('([^/]+)/?$', '', httpd.path),
                  'QUERYNAME': re.sub('(.*)(\?.*)', r"\1", strSubtract(httpd.path, re.sub('([^/]+)/?$', '', httpd.path)))
@@ -927,7 +954,8 @@ class MappingRules():
                 logging.info ("Log Flush: Debug logging on")
 
             # logging.debug ("MappingRules.applyRules httpd='" + str(vars(httpd)) + "'")
-            logging.debug ("MappingRules.applyRules envs vars = " + self.replaceHTTPVars(httpd, "\{\%HOSTNAME_NAME\%\}:'{%HOSTNAME_NAME%}', \{\%PORT_NUMBER\%\}:'{%PORT_NUMBER%}', \{\%PROTOCOL\%\}:'{%PROTOCOL%}', \{\%COMMAND\%\}:'{%COMMAND%}',\{\%PATH\%\}:'{%PATH%}', \{\%QUERYSTRING\%\}:'{%QUERYSTRING%}', \{\%QUERYBASEPATH\%\}:'{%QUERYBASEPATH%}',\{\%QUERYNAME\%\}:'{%QUERYNAME%}'").replace('\{\%', '{%').replace('\%\}','%}') )
+            logging.debug ("MappingRules.applyRules file = " + self.filepath)
+            logging.debug ("MappingRules.applyRules envs vars = " + self.replaceHTTPVars(httpd, "\{\%BASEPATH\%\}:'{%BASEPATH%}', \{\%HOSTNAME_NAME\%\}:'{%HOSTNAME_NAME%}', \{\%PORT_NUMBER\%\}:'{%PORT_NUMBER%}', \{\%PROTOCOL\%\}:'{%PROTOCOL%}', \{\%COMMAND\%\}:'{%COMMAND%}',\{\%PATH\%\}:'{%PATH%}', \{\%QUERYSTRING\%\}:'{%QUERYSTRING%}', \{\%QUERYBASEPATH\%\}:'{%QUERYBASEPATH%}',\{\%QUERYNAME\%\}:'{%QUERYNAME%}'").replace('\{\%', '{%').replace('\%\}','%}') )
             logging.debug ("MappingRules.applyRules func vars = basepath:'" + basepath + "', querytomatch:'" + querytomatch + "'")
 
             if not osWebpageDir:
@@ -946,8 +974,8 @@ class MappingRules():
                     rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
 
                 if rtnScript:
-                    logging.debug("MappingRules.applyRules matched rule : " + str(rule))
-                    logging.debug("MappingRules.applyRules returning : " + rtnScript)
+                    logging.info("MappingRules.applyRules matched rule : " + str(rule))
+                    logging.info("MappingRules.applyRules returning : " + rtnScript)
                     return rtnScript # build return path for script
 
                 # apply files based upon file path sent
@@ -959,8 +987,8 @@ class MappingRules():
                     rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
 
                 if rtnRedirect:
-                    logging.debug("MappingRules.applyRules matched rule : " + str(rule))
-                    logging.debug("MappingRules.applyRules redirecting to : " + rtnRedirect)
+                    logging.info("MappingRules.applyRules matched rule : " + str(rule))
+                    logging.info("MappingRules.applyRules redirecting to : " + rtnRedirect)
                     httpd.redirect(rtnRedirect)
                     return None
 
@@ -972,10 +1000,7 @@ class MappingRules():
                     h.setLevel(self.logLevel)
                 logging.getLogger().root.setLevel(self.logLevel)
 
-
-
-
-
+# ----------------------------------------------------------------------------------------------------
 
 class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
     host_name     = None
@@ -988,7 +1013,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
     homeScriptName    = None
     mimeTypeFilename  = None
     mimeDict          = {}
-    templateDict      = {}
+    templateCacheDict = {}
 
     cgiFormDataLoaded   = False
     cgiFormDataPostFull = {}
@@ -1002,6 +1027,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
     defaultRunFiles     = ('index.py', 'index.ty')
     mappingRulesFile    = '_mapping_rules_'
     noInternetAccess    = ('_hidden_', '_templates_', mappingRulesFile)
+    mappingCacheDict    = {}
     mappingRules        = None
 
     # basic parsing of the self.path url path
@@ -1319,12 +1345,12 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         t = None
 
         # check if its already cached
-        if templateFilename in self.templateDict:
-             t = self.templateDict[templateFilename]
+        if templateFilename in self.templateCacheDict:
+             t = self.templateCacheDict[templateFilename]
         else:
             # reuse the previous loaded version
              t = TemplateLoad(templateFilename, self.homeDir, checkFileChangedSecs)
-             self.templateDict[templateFilename] = t
+             self.templateCacheDict[templateFilename] = t
 
         outputStr = io.StringIO()
         if not t.renderTemplate(userVarsDict, self, outputStr):
@@ -1452,6 +1478,20 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         with open(filepath, 'rb') as file:
             exec(compile(file.read(), filepath, 'exec'), globals, locals)
 
+    def loadMappingRules (self, mprFile):
+        if mprFile:
+            # determine if mapping in the cache dict
+            if mprFile in self.mappingCacheDict:
+                logging.debug("HTTPWebServer.do_GET cached load mapping rules file '" + mprFile + "'")
+                self.mappingCacheDict[mprFile].checkCache()
+                return self.mappingCacheDict[mprFile]
+            else:
+                # reuse the previous loaded version
+                logging.info("HTTPWebServer.do_GET loading mapping rules file '" + mprFile + "'")
+                mr = MappingRules (mprFile)
+                self.mappingCacheDict[mprFile] = mr
+                return mr
+        return None
     def processHTTPCommand(self):
         try:
             """Respond to a GET request."""
@@ -1491,9 +1531,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
             if self.queryScript.strip('/') == self.queryBasePath.strip('/'):
                 self.queryScript = ''
 
-            if mprFile:
-                logging.info("HTTPWebServer.do_GET loading mapping rules file '" + mprFile + "'")
-                self.mappingRules = MappingRules (mprFile)
+            self.mappingRules = self.loadMappingRules (mprFile)
 
             if self.mappingRules:
                 # apply mapping rules to  current url path and convert to script name to execute

@@ -27,12 +27,12 @@
     +--logs
     |      Web logs
     |
-    +--webapp (contains user web content, be it static html, or dynamic .py python scripts and .ty template/python scripts
+    +--webapps (contains user web content, be it static html, or dynamic .py python scripts and .ty template/python scripts
     |      _hidden_    (files contain in this directory are not accessible via GET requests)
     |      _templates_ (files contain in this directory are not accessible via GET requests, and contain templates files accessible via self.templateRun('templatename.html') method
     |      *.py        (python script files called upon get requests)
     |      *.ty        (template script files called upon get requests)
-    +--webapp/subDirectory1/subDirectory2/...etc...  (user defined sub directories to store content)
+    +--webapps/subDirectory1/subDirectory2/...etc...  (user defined sub directories to store content)
                                          | _hidden_
                                          | _templates_
                                          | *.py

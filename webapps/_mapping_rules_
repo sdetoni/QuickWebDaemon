@@ -31,13 +31,6 @@
 #      regexp,     .*, override.py, new_override.py
 #      regexp-opt, .*, override.py, new_override.py, re.IGNORECASE
 #      pymatch,    .*, (override.py, new_override.py, re.IGNORECASE
-regexp-opt, .*, randomReference.py, index.py, re.IGNORECASE
-regexp,     .*, .*, index.py
-regexp,     .*, old_metadata\.*, metadata\index.py
-
-
-#match on https://blah.com/metadata/test,test
-pymatch,         .*, querytomatch.lower() == 'test,,test' , index.py
-regexp,          .*, test,,test, index.py
-regexp-redirect, .*,  .*mapping_old\.info.*, {%PROTOCOL%}://{%HOSTNAME_NAME%}:{%PORT_NUMBER%}/mapping.info?{%QUERYSTRING%}
-
+#
+debug, off
+regexp-redirect, .*, ^/$|^$, demo\
