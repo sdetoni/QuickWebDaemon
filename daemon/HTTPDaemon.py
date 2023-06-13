@@ -944,11 +944,11 @@ class MappingRules():
 
     def applyRules (self, httpd, osWebpageDir, basepath, querytomatch, defaultPath=''):
         #  basePath='/metadata/test/' querystring='program.py?param=123'
-        if (self.debug):
+        if self.debug:
             logging.info ("Log Flush: Mapping Debug logging on")
 
         # logging.debug ("MappingRules.applyRules httpd='" + str(vars(httpd)) + "'")
-        if (self.debug):
+        if self.debug:
             logging.info ("MappingRules.applyRules file = " + self.filepath)
             logging.info ("MappingRules.applyRules envs vars = " + self.replaceHTTPVars(httpd, "\{\%BASEPATH\%\}:'{%BASEPATH%}', \{\%HOSTNAME_NAME\%\}:'{%HOSTNAME_NAME%}', \{\%PORT_NUMBER\%\}:'{%PORT_NUMBER%}', \{\%PROTOCOL\%\}:'{%PROTOCOL%}', \{\%COMMAND\%\}:'{%COMMAND%}',\{\%PATH\%\}:'{%PATH%}', \{\%QUERYSTRING\%\}:'{%QUERYSTRING%}', \{\%QUERYBASEPATH\%\}:'{%QUERYBASEPATH%}',\{\%QUERYNAME\%\}:'{%QUERYNAME%}'").replace('\{\%', '{%').replace('\%\}','%}') )
             logging.info ("MappingRules.applyRules func vars = basepath:'" + basepath + "', querytomatch:'" + querytomatch + "'")
@@ -969,7 +969,7 @@ class MappingRules():
                 rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
 
             if rtnScript:
-                logging.info("MappingRules.applyRules matched rule : " + str(rule))
+                logging.info("MappingRules.applyRules MATACHED rule : " + str(rule))
                 logging.info("MappingRules.applyRules returning : " + rtnScript)
                 return rtnScript # build return path for script
 
@@ -982,10 +982,13 @@ class MappingRules():
                 rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
 
             if rtnRedirect:
-                logging.info("MappingRules.applyRules matched rule : " + str(rule))
+                logging.info("MappingRules.applyRules MATACHED rule : " + str(rule))
                 logging.info("MappingRules.applyRules redirecting to : " + rtnRedirect)
                 httpd.redirect(rtnRedirect)
                 return None
+
+            if self.debug:
+                logging.info("MappingRules.applyRules failed matching on rule : " + str(rule))
 
         return defaultPath
 
