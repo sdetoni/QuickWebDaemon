@@ -929,76 +929,65 @@ class MappingRules():
 
     def replaceHTTPVars (self, httpd, replStr):
         cmds = { 'HOSTNAME_NAME' : httpd.host_name,
-                 'PORT_NUMBER': httpd.port_number,
-                 'PROTOCOL': httpd.protocol,
-                 'COMMAND': httpd.command,
-                 'PATH': httpd.path,
-                 'BASEPATH' : httpd.queryBasePath,
-                 'QUERYSTRING': httpd.queryString,
-                 'QUERYBASEPATH': re.sub('([^/]+)/?$', '', httpd.path),
-                 'QUERYNAME': re.sub('(.*)(\?.*)', r"\1", strSubtract(httpd.path, re.sub('([^/]+)/?$', '', httpd.path)))
+                 'PORT_NUMBER':    httpd.port_number,
+                 'PROTOCOL':       httpd.protocol,
+                 'COMMAND':        httpd.command,
+                 'PATH':           httpd.path,
+                 'BASEPATH' :      httpd.queryBasePath,
+                 'QUERYSTRING':    httpd.queryString,
+                 'QUERYBASEPATH':  re.sub('([^/]+)/?$', '', httpd.path),
+                 'QUERYNAME':      re.sub('(.*)(\?.*)', r"\1", strSubtract(httpd.path, re.sub('([^/]+)/?$', '', httpd.path)))
                 }
         for k in cmds.keys():
             replStr = re.sub('(\{\%\s*'+k+'\s*\%\})', str(cmds[k]), replStr)
         return replStr
 
     def applyRules (self, httpd, osWebpageDir, basepath, querytomatch, defaultPath=''):
-        #  basePath='/metadata/test/' querystring='program.py?erwerwer'
-        try:
-            self.logLevel = logging.getLogger().level
-            if (self.debug):
-                # Enable debug logging for all handlers
-                for h in logging.getLogger().handlers:
-                    h.setLevel(logging.DEBUG)
-                logging.getLogger().root.setLevel(logging.DEBUG)
-                logging.info ("Log Flush: Debug logging on")
+        #  basePath='/metadata/test/' querystring='program.py?param=123'
+        if (self.debug):
+            logging.info ("Log Flush: Mapping Debug logging on")
 
-            # logging.debug ("MappingRules.applyRules httpd='" + str(vars(httpd)) + "'")
-            logging.debug ("MappingRules.applyRules file = " + self.filepath)
-            logging.debug ("MappingRules.applyRules envs vars = " + self.replaceHTTPVars(httpd, "\{\%BASEPATH\%\}:'{%BASEPATH%}', \{\%HOSTNAME_NAME\%\}:'{%HOSTNAME_NAME%}', \{\%PORT_NUMBER\%\}:'{%PORT_NUMBER%}', \{\%PROTOCOL\%\}:'{%PROTOCOL%}', \{\%COMMAND\%\}:'{%COMMAND%}',\{\%PATH\%\}:'{%PATH%}', \{\%QUERYSTRING\%\}:'{%QUERYSTRING%}', \{\%QUERYBASEPATH\%\}:'{%QUERYBASEPATH%}',\{\%QUERYNAME\%\}:'{%QUERYNAME%}'").replace('\{\%', '{%').replace('\%\}','%}') )
-            logging.debug ("MappingRules.applyRules func vars = basepath:'" + basepath + "', querytomatch:'" + querytomatch + "'")
+        # logging.debug ("MappingRules.applyRules httpd='" + str(vars(httpd)) + "'")
+        if (self.debug):
+            logging.info ("MappingRules.applyRules file = " + self.filepath)
+            logging.info ("MappingRules.applyRules envs vars = " + self.replaceHTTPVars(httpd, "\{\%BASEPATH\%\}:'{%BASEPATH%}', \{\%HOSTNAME_NAME\%\}:'{%HOSTNAME_NAME%}', \{\%PORT_NUMBER\%\}:'{%PORT_NUMBER%}', \{\%PROTOCOL\%\}:'{%PROTOCOL%}', \{\%COMMAND\%\}:'{%COMMAND%}',\{\%PATH\%\}:'{%PATH%}', \{\%QUERYSTRING\%\}:'{%QUERYSTRING%}', \{\%QUERYBASEPATH\%\}:'{%QUERYBASEPATH%}',\{\%QUERYNAME\%\}:'{%QUERYNAME%}'").replace('\{\%', '{%').replace('\%\}','%}') )
+            logging.info ("MappingRules.applyRules func vars = basepath:'" + basepath + "', querytomatch:'" + querytomatch + "'")
 
-            if not osWebpageDir:
-                logging.error("MappingRules.applyRules osWebpageDir is blank/none, internal error!")
-                return defaultPath
-
-            rtnScript = ''
-            rtnRedirect = ''
-            for rule in self.rules:
-                # apply files based upon file path sent
-                if (rule[self.TYPE] == self.TYPE_RE)        and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch):
-                    rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
-                elif (rule[self.TYPE] == self.TYPE_REOPT)   and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch, eval(rule[self.REGEXP_OPTS])):
-                    rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
-                elif (rule[self.TYPE] == self.TYPE_PYMATCH) and re.match(rule[self.HTTPCMD_RE], httpd.command) and eval(rule[self.PYEVAL]):
-                    rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
-
-                if rtnScript:
-                    logging.info("MappingRules.applyRules matched rule : " + str(rule))
-                    logging.info("MappingRules.applyRules returning : " + rtnScript)
-                    return rtnScript # build return path for script
-
-                # apply files based upon file path sent
-                if (rule[self.TYPE] == self.TYPE_RE_REDIRT)        and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch):
-                    rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
-                elif (rule[self.TYPE] == self.TYPE_REOPT_REDIRT)   and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch, eval(rule[self.REGEXP_OPTS])):
-                    rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
-                elif (rule[self.TYPE] == self.TYPE_PYMATCH_REDIRT) and re.match(rule[self.HTTPCMD_RE], httpd.command) and eval(rule[self.PYEVAL]):
-                    rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
-
-                if rtnRedirect:
-                    logging.info("MappingRules.applyRules matched rule : " + str(rule))
-                    logging.info("MappingRules.applyRules redirecting to : " + rtnRedirect)
-                    httpd.redirect(rtnRedirect)
-                    return None
-
+        if not osWebpageDir:
+            logging.error("MappingRules.applyRules osWebpageDir is blank/none, internal error!")
             return defaultPath
-        finally:
-            # reset debug mode ...
-            if (self.debug):
-                for h in logging.getLogger().handlers:
-                    h.setLevel(self.logLevel)
-                logging.getLogger().root.setLevel(self.logLevel)
+
+        rtnScript = ''
+        rtnRedirect = ''
+        for rule in self.rules:
+            # apply files based upon file path sent
+            if (rule[self.TYPE] == self.TYPE_RE)        and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch):
+                rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
+            elif (rule[self.TYPE] == self.TYPE_REOPT)   and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch, eval(rule[self.REGEXP_OPTS])):
+                rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
+            elif (rule[self.TYPE] == self.TYPE_PYMATCH) and re.match(rule[self.HTTPCMD_RE], httpd.command) and eval(rule[self.PYEVAL]):
+                rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
+
+            if rtnScript:
+                logging.info("MappingRules.applyRules matched rule : " + str(rule))
+                logging.info("MappingRules.applyRules returning : " + rtnScript)
+                return rtnScript # build return path for script
+
+            # apply files based upon file path sent
+            if (rule[self.TYPE] == self.TYPE_RE_REDIRT)        and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch):
+                rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
+            elif (rule[self.TYPE] == self.TYPE_REOPT_REDIRT)   and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch, eval(rule[self.REGEXP_OPTS])):
+                rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
+            elif (rule[self.TYPE] == self.TYPE_PYMATCH_REDIRT) and re.match(rule[self.HTTPCMD_RE], httpd.command) and eval(rule[self.PYEVAL]):
+                rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
+
+            if rtnRedirect:
+                logging.info("MappingRules.applyRules matched rule : " + str(rule))
+                logging.info("MappingRules.applyRules redirecting to : " + rtnRedirect)
+                httpd.redirect(rtnRedirect)
+                return None
+
+        return defaultPath
 
 # ----------------------------------------------------------------------------------------------------
 
