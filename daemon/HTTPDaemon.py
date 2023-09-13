@@ -1304,7 +1304,6 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         if otherHeaderDict:
             for name, value in otherHeaderDict.items():
                 self.send_header(name, value)
-
         self.end_headers()
 
         if (inclHTMLRedirect):
@@ -1484,6 +1483,12 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                 self.mappingCacheDict[mprFile] = mr
                 return mr
         return None
+
+    def makeQueryBasePath (self, mprDir):
+        # subtract home path from webpage filesystem path, and convert it to url path current path
+        self.queryBasePath = strSubtract(mprDir, os.path.abspath(self.homeDir)).replace(os.path.sep, '/').strip('/')
+        if self.queryBasePath:
+            self.queryBasePath = '/' + self.queryBasePath + '/'
     def processHTTPCommand(self):
         try:
             """Respond to a GET request."""
@@ -1514,24 +1519,20 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
             if not mprFile: # if no mapping file found in current path, then apply default mappings from root path to allow global mappings, if it exists
                 mprDir, mprFile = self.getLocalMappingRulesFile('')
 
-            # subtract home path from webpage filesystem path, and convert it to url path current path
-            self.queryBasePath = strSubtract (mprDir, os.path.abspath(self.homeDir)).replace(os.path.sep, '/').strip('/')
-            if self.queryBasePath:
-                self.queryBasePath = '/' + self.queryBasePath + '/'
-
-            self.queryScript = strSubtract(self.path, self.queryBasePath).split('?')[0]
-            if self.queryScript.strip('/') == self.queryBasePath.strip('/'):
-                self.queryScript = ''
+            self.makeQueryBasePath (mprDir)
 
             self.mappingRules = self.loadMappingRules (mprFile)
 
             if self.mappingRules:
                 # apply mapping rules to  current url path and convert to script name to execute
                 fullAccessPath = self.mappingRules.applyRules (self, mprDir, self.queryBasePath, strSubtract(self.path, self.queryBasePath), fullAccessPath)
+                if fullAccessPath:
+                    self.makeQueryBasePath(os.path.dirname(fullAccessPath))
 
             # if fullAccessPath is None (redirect from mappingRules), then leave web page rending now...
             if not fullAccessPath:
                 return
+
             # ----------------- End Mapping files processor -------------------
 
             # setup default processing based upon empty directory paths e.g. https://blah.com/blah or https://blah.com/blah/
