@@ -18,39 +18,47 @@ import logging
 #sys.setdefaultencoding('utf8')
 
 
-
 # Main web server loop to init, run, shutdown
 GF.DaemonRunningState = GF.DAEMON_RUNMODE_RUN
 while GF.DaemonRunningState == GF.DAEMON_RUNMODE_RUN:
     # init Config, DB, and Logging
     GF.initGlobalFuncs("./config/daemon.cfg")
 
-    thrdDaemon = False
-    httpPort   = GF.Config.getSettingValue('HTTP_PORT')
-    httpsPort  = GF.Config.getSettingValue('HTTPS_PORT')
+    httpPortList = [item for item in set(GF.Config.getSetting('HTTP_PORT', '').split(',')) if item.strip()]
+    httpsPortList = [item for item in set(GF.Config.getSetting('HTTPS_PORT', '4430').split(',')) if item.strip()]
+    lastHTTP = None
+    lastHTTPS = None
 
+    if len(httpPortList) > 0:
+        lastHTTP = httpPortList[-1]
+    if len(httpsPortList) > 0:
+        lastHTTPS = httpsPortList[-1]
+
+    thrdDaemon = False
     # Start the HTTP server and run as thread
-    if httpPort:
-        if httpsPort:
+    if lastHTTP:
+        if lastHTTPS:
             thrdDaemon = True
-        HTTPDaemon.startDaemon (host_name        = GF.Config.getSettingStr  ('HTTP_SERVERNAME',         socket.gethostname()),
-                                port_number      = httpPort,
-                                homeDir          = GF.Config.getSettingStr  ('HTTP_HOME_DIRECTORY',     './webapps'),
-                                homeScriptName   = GF.Config.getSettingStr  ('HTTP_HOME_SCRIPT_NAME',   'index.py'),
-                                mimeTypeFilename = GF.Config.getSettingStr  ('HTTP_MIMETYPES_FILENAME', './config/mimetypes.txt'),
-                                serve_via_ssl    = False,
-                                threaded         = thrdDaemon)
+        for httpPort in httpPortList:
+            HTTPDaemon.startDaemon (host_name        = GF.Config.getSettingStr  ('HTTP_SERVERNAME',         socket.gethostname()),
+                                    port_number      = int(httpPort),
+                                    homeDir          = GF.Config.getSettingStr  ('HTTP_HOME_DIRECTORY',     './webapps'),
+                                    homeScriptName   = GF.Config.getSettingStr  ('HTTP_HOME_SCRIPT_NAME',   'index.py'),
+                                    mimeTypeFilename = GF.Config.getSettingStr  ('HTTP_MIMETYPES_FILENAME', './config/mimetypes.txt'),
+                                    serve_via_ssl    = False,
+                                    threaded         = thrdDaemon)
 
     # Start the HTTPS server, and run as a blocking process
-    if httpsPort:
-        HTTPDaemon.startDaemon (host_name        = GF.Config.getSettingStr  ('HTTP_SERVERNAME',         socket.gethostname()),
-                                port_number      = GF.Config.getSettingValue('HTTPS_PORT',              4430),
-                                ssl_server_pem   = GF.Config.getSettingStr  ('HTTPS_SSL_SERVER_PEM',    './config/server.pem'),
-                                homeDir          = GF.Config.getSettingStr  ('HTTP_HOME_DIRECTORY',     './webapps'),
-                                homeScriptName   = GF.Config.getSettingStr  ('HTTP_HOME_SCRIPT_NAME',   'index.py'),
-                                mimeTypeFilename = GF.Config.getSettingStr  ('HTTP_MIMETYPES_FILENAME', './config/mimetypes.txt'),
-                                serve_via_ssl    = True,
-                                threaded         = False)
+    if lastHTTPS:
+        for httpsPort in httpsPortList:
+            HTTPDaemon.startDaemon (host_name        = GF.Config.getSettingStr  ('HTTP_SERVERNAME',         socket.gethostname()),
+                                    port_number      = int(httpsPort),
+                                    ssl_server_pem   = GF.Config.getSettingStr  ('HTTPS_SSL_SERVER_PEM',    './config/server.pem'),
+                                    homeDir          = GF.Config.getSettingStr  ('HTTP_HOME_DIRECTORY',     './webapps'),
+                                    homeScriptName   = GF.Config.getSettingStr  ('HTTP_HOME_SCRIPT_NAME',   'index.py'),
+                                    mimeTypeFilename = GF.Config.getSettingStr  ('HTTP_MIMETYPES_FILENAME', './config/mimetypes.txt'),
+                                    serve_via_ssl    = True,
+                                    threaded         = httpsPort != lastHTTPS)
 
     # TODO: To shutdown HTTPDaemon, call GlobalFuncs.shutdownDaemon(), or GlobalFuncs.restartDaemon()
 
