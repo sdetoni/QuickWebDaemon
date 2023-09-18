@@ -24,8 +24,8 @@ while GF.DaemonRunningState == GF.DAEMON_RUNMODE_RUN:
     # init Config, DB, and Logging
     GF.initGlobalFuncs("./config/daemon.cfg")
 
-    httpPortList = [item for item in set(GF.Config.getSetting('HTTP_PORT', '').split(',')) if item.strip()]
-    httpsPortList = [item for item in set(GF.Config.getSetting('HTTPS_PORT', '4430').split(',')) if item.strip()]
+    httpPortList  = sorted([int(item) for item in set(GF.Config.getSetting('HTTP_PORT', '').split(',')) if item.strip()])
+    httpsPortList = sorted([int(item) for item in set(GF.Config.getSetting('HTTPS_PORT', '4430').split(',')) if item.strip()])
     lastHTTP = None
     lastHTTPS = None
 
@@ -41,7 +41,7 @@ while GF.DaemonRunningState == GF.DAEMON_RUNMODE_RUN:
             thrdDaemon = True
         for httpPort in httpPortList:
             HTTPDaemon.startDaemon (host_name        = GF.Config.getSettingStr  ('HTTP_SERVERNAME',         socket.gethostname()),
-                                    port_number      = int(httpPort),
+                                    port_number      = httpPort,
                                     homeDir          = GF.Config.getSettingStr  ('HTTP_HOME_DIRECTORY',     './webapps'),
                                     homeScriptName   = GF.Config.getSettingStr  ('HTTP_HOME_SCRIPT_NAME',   'index.py'),
                                     mimeTypeFilename = GF.Config.getSettingStr  ('HTTP_MIMETYPES_FILENAME', './config/mimetypes.txt'),
@@ -52,7 +52,7 @@ while GF.DaemonRunningState == GF.DAEMON_RUNMODE_RUN:
     if lastHTTPS:
         for httpsPort in httpsPortList:
             HTTPDaemon.startDaemon (host_name        = GF.Config.getSettingStr  ('HTTP_SERVERNAME',         socket.gethostname()),
-                                    port_number      = int(httpsPort),
+                                    port_number      = httpsPort,
                                     ssl_server_pem   = GF.Config.getSettingStr  ('HTTPS_SSL_SERVER_PEM',    './config/server.pem'),
                                     homeDir          = GF.Config.getSettingStr  ('HTTP_HOME_DIRECTORY',     './webapps'),
                                     homeScriptName   = GF.Config.getSettingStr  ('HTTP_HOME_SCRIPT_NAME',   'index.py'),

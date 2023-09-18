@@ -960,13 +960,17 @@ class MappingRules():
         rtnScript = ''
         rtnRedirect = ''
         for rule in self.rules:
-            # apply files based upon file path sent
-            if (rule[self.TYPE] == self.TYPE_RE)        and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch):
-                rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
-            elif (rule[self.TYPE] == self.TYPE_REOPT)   and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch, eval(rule[self.REGEXP_OPTS])):
-                rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
-            elif (rule[self.TYPE] == self.TYPE_PYMATCH) and re.match(rule[self.HTTPCMD_RE], httpd.command) and eval(rule[self.PYEVAL]):
-                rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
+            try:
+                # apply files based upon file path sent
+                if (rule[self.TYPE] == self.TYPE_RE)        and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch):
+                    rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
+                elif (rule[self.TYPE] == self.TYPE_REOPT)   and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch, eval(rule[self.REGEXP_OPTS])):
+                    rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
+                elif (rule[self.TYPE] == self.TYPE_PYMATCH) and re.match(rule[self.HTTPCMD_RE], httpd.command) and eval(rule[self.PYEVAL]):
+                    rtnScript = osWebpageDir + os.path.sep + rule[self.SCRIPT]
+            except Exception as err:
+                logging.error (f"Failed mapping rule evaluation : {str(rule)}" )
+                logging.error(str(err))
 
             if rtnScript:
                 logging.info("MappingRules.applyRules MATACHED rule : " + str(rule))
@@ -974,12 +978,16 @@ class MappingRules():
                 return rtnScript # build return path for script
 
             # apply files based upon file path sent
-            if (rule[self.TYPE] == self.TYPE_RE_REDIRT)        and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch):
-                rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
-            elif (rule[self.TYPE] == self.TYPE_REOPT_REDIRT)   and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch, eval(rule[self.REGEXP_OPTS])):
-                rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
-            elif (rule[self.TYPE] == self.TYPE_PYMATCH_REDIRT) and re.match(rule[self.HTTPCMD_RE], httpd.command) and eval(rule[self.PYEVAL]):
-                rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
+            try:
+                if (rule[self.TYPE] == self.TYPE_RE_REDIRT)        and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch):
+                    rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
+                elif (rule[self.TYPE] == self.TYPE_REOPT_REDIRT)   and re.match(rule[self.HTTPCMD_RE], httpd.command) and re.match(rule[self.REGEXP], querytomatch, eval(rule[self.REGEXP_OPTS])):
+                    rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
+                elif (rule[self.TYPE] == self.TYPE_PYMATCH_REDIRT) and re.match(rule[self.HTTPCMD_RE], httpd.command) and eval(rule[self.PYEVAL]):
+                    rtnRedirect = self.replaceHTTPVars (httpd, rule[self.TYPE_PYMATCH_REDIRT])
+            except Exception as err:
+                logging.error (f"Failed mapping redirect rule evaluation : {str(rule)}" )
+                logging.error(str(err))
 
             if rtnRedirect:
                 logging.info("MappingRules.applyRules MATACHED rule : " + str(rule))
