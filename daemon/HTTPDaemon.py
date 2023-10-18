@@ -18,10 +18,19 @@ import base64
 import sys
 import os
 import datetime
+import tempfile
 import io
 
 # HTTPDaemon instances created
 SERVERS = []
+
+# -------------------------------------------------------------------
+
+class FieldStorage (cgi.FieldStorage):
+
+    def make_file(self):
+        return tempfile.TemporaryFile("wb+")
+
 
 # -------------------------------------------------------------------
 
@@ -1230,13 +1239,14 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         if self.cgiFormDataLoaded ==  False:
             self.cgiFormData = {}
             if self.command.upper() == "POST":
-                self.cgiFormDataPostFull = cgi.FieldStorage(fp=self.rfile,
-                                                            headers=self.headers,
+                self.cgiFormDataPostFull = FieldStorage(fp=self.rfile,
+                                                        headers=self.headers,
                                                             keep_blank_values=1,
                                                             environ={'REQUEST_METHOD': 'POST',
                                                                      'CONTENT_TYPE': self.headers['Content-Type'],
                                                                     }
                                                            )
+
                 # convert from field storage to normal dictionary list
                 try:
                     for item in self.cgiFormDataPostFull.keys():
