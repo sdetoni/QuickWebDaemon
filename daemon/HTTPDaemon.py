@@ -309,7 +309,7 @@ class TemplateLoad ():
                                     # new included src +
                                     # advance past the close %} tag so to replace the tag with the include src
                                     self.src = self.src[:tokenStartPos] + \
-                                               open(incFilename, 'U').read() + \
+                                               open(incFilename).read() + \
                                                self.src[self.srcLexPos +len(lexCloseDict):]
 
                                     self.chkFileChanges[incFilename] = os.path.getmtime(incFilename)
@@ -877,7 +877,7 @@ class MappingRules():
 
         self.rules    = []
         self.debug    = False
-        mrf           = open (self.filepath, 'U')
+        mrf           = open (self.filepath)
         try:
             for line in mrf.readlines():
                 line = line.replace('\t', ' ').strip()
@@ -1409,19 +1409,17 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
         elif (not self.headerClosed):
             self.end_headers()
 
-        try:
-            if type(s) == type(str()):
-                self.outputRaw (bytes(s, "utf-8"))
-            else:
-                self.outputRaw (s)
-        except Exception as e:
-            logging.error('HTTPWebServer.output failed output() at path: >' + self.path + '< ' + str(e))
+        if type(s) == type(str()):
+            self.outputRaw (bytes(s, "utf-8"))
+        else:
+            self.outputRaw (s)
 
     def outputRaw(self, r):
         try:
             self.wfile.write(r)
         except Exception as e:
             logging.error('HTTPWebServer.outputRaw failed outputRaw() at path: >' + self.path + '< ' + str(e))
+            raise e
 
     def isMimeType (self, filePath):
         # extract file extension so as to send the correct mime-type

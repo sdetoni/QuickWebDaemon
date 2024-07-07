@@ -28,7 +28,7 @@ class ConfigLoader (object):
             self.filename      = filename
             self.settings      = {self.secType_ID:self.secTypeGlobal}
             self._includeFiles (self.filename)
-            self.settings = self._loadCfg (open (self.filename, 'U').readlines(), self.secTypeGlobal, self.settings, None)
+            self.settings = self._loadCfg (open (self.filename).readlines(), self.secTypeGlobal, self.settings, None)
         except Exception as inst:
             logging.error('Failed loading config file ' + str(self.filename) + ' ' + str(traceback.format_exc()))
             raise
@@ -184,7 +184,7 @@ class ConfigLoader (object):
                     param = incMatched.group(1).strip()
                     self._includeFiles(param)
                     try:
-                        incFileList = open(param, 'U').readlines()
+                        incFileList = open(param).readlines()
 
                         #insert lines at the start of this list and continue parsing ...
                         for line in reversed (incFileList):
@@ -263,7 +263,7 @@ class ConfigLoader (object):
                     if s[0].upper() == ConfigIncludeFile:
                         self._includeFiles(param)
                         try:
-                            incFileList = open(param, 'U').readlines()
+                            incFileList = open(param).readlines()
 
                             #insert lines at the start of this list and continue parsing ...
                             for line in reversed (incFileList):
@@ -349,7 +349,7 @@ class ConfigLoader (object):
                             if name not in settings:
                                 return ''
                             p = self._envVarExpand(settings[name], path)
-                            if self._paramIsType(p) >= 0:
+                            if self._paramIsType(p) is not None and self._paramIsType(p) >= 0:
                                 p = eval(p)
                             return subprocess.check_output(p, stderr=subprocess.STDOUT, shell=True)
                         except Exception as e:
@@ -362,7 +362,7 @@ class ConfigLoader (object):
                             _=''
                             lStack = {'_' : _}
                             p = self._envVarExpand(settings[name], path)
-                            if self._paramIsType(p) >= 0:
+                            if self._paramIsType(p) is not None and self._paramIsType(p) >= 0:
                                 p = eval(p)
                             exec (p, lStack, lStack)
                             _ = lStack['_']
@@ -419,7 +419,7 @@ class ConfigLoader (object):
         if not self._obfuscateACLTest ():
             return None
 
-        lineList = open (self.filename, 'U').readlines()
+        lineList = open (self.filename).readlines()
 
         MODE_NORM, MODE_COMMENT = range (2)
         scanMode    = MODE_NORM
@@ -522,7 +522,7 @@ class ConfigLoader (object):
             expdS = []
             for item in s:
                 # determine setting type (string or non-string and run it through python parser)
-                if self._paramIsType(item) >= 0:
+                if self._paramIsType(item) is not None and self._paramIsType(item) >= 0:
                     item = eval(item)
                 expdS.append(self._envVarExpand (item, self._getPath (name)))
             return expdS
@@ -586,7 +586,7 @@ class ConfigLoader (object):
             param = self._getSetting(servicePath, default)
 
         # determine setting type (string or non-string and run it through python parser)
-        if self._paramIsType(param) != None and self._paramIsType(param) >= 0:
+        if self._paramIsType(param) is not None and self._paramIsType(param) >= 0:
             param = eval(param)
         if not param:
             param = default
