@@ -7,7 +7,10 @@
     <bookmark url="file://$PROJECT_DIR$/daemon/HTTPDaemon.py" line="136" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ea08d542-335f-496f-827f-8ef22b954951" name="Default Changelist" comment="" />
+    <list default="true" id="ea08d542-335f-496f-827f-8ef22b954951" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/daemon/ConfigLoader.py" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/ConfigLoader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daemon/HTTPDaemon.py" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/HTTPDaemon.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -134,6 +137,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 6
+}]]></component>
   <component name="ProjectFrameBounds">
     <option name="x" value="476" />
     <option name="y" value="113" />
@@ -141,7 +147,6 @@
     <option name="height" value="1016" />
   </component>
   <component name="ProjectId" id="21k7gNq5GkPhijnNpkTIUcSA28H" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -205,7 +210,12 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "last_opened_file_path": "D:/Projects/github.com/QuickWebDaemon"
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/projects/QuickWebDaemon",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="PyConsoleOptionsProvider">
@@ -234,16 +244,19 @@
   <component name="RunManager">
     <configuration name="runner" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="QuickWebDaemon" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="C:\Python\Python310\python.exe" />
+      <option name="SDK_NAME" value="Python 3.13 (chromecast_audio_slinger) (2)" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/runner.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -259,6 +272,14 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-PY-251.26094.141" />
+        <option value="bundled-python-sdk-9f8e2b94138c-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26094.141" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
@@ -270,6 +291,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1560757292919</updated>
+      <workItem from="1751006202974" duration="22000" />
     </task>
     <servers />
   </component>
@@ -322,6 +344,9 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -506,28 +531,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Python3/Lib/threading.py">
+    <entry file="file://$PROJECT_DIR$/../../Python3/Lib/threading.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="111">
           <caret line="864" selection-start-line="864" selection-end-line="864" />
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Python3/Lib/socketserver.py">
+    <entry file="file://$PROJECT_DIR$/../../Python3/Lib/socketserver.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="190">
           <caret line="650" selection-start-line="650" selection-end-line="650" />
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Python3/Lib/http/server.py">
+    <entry file="file://$PROJECT_DIR$/../../Python3/Lib/http/server.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="122">
           <caret line="426" selection-start-line="426" selection-end-line="426" />
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Python3/Lib/http/cookies.py">
+    <entry file="file://$PROJECT_DIR$/../../Python3/Lib/http/cookies.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="301" selection-start-line="301" selection-end-line="301" />
