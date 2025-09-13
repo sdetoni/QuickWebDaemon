@@ -7,10 +7,7 @@
     <bookmark url="file://$PROJECT_DIR$/daemon/HTTPDaemon.py" line="136" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ea08d542-335f-496f-827f-8ef22b954951" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/daemon/ConfigLoader.py" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/ConfigLoader.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daemon/HTTPDaemon.py" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/HTTPDaemon.py" afterDir="false" />
-    </list>
+    <list default="true" id="ea08d542-335f-496f-827f-8ef22b954951" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -210,10 +207,15 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Python.runner.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "master",
     "last_opened_file_path": "C:/projects/QuickWebDaemon",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
@@ -291,7 +293,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1560757292919</updated>
-      <workItem from="1751006202974" duration="22000" />
+      <workItem from="1751006202974" duration="338000" />
     </task>
     <servers />
   </component>
@@ -377,6 +379,9 @@
         <watch expression="str(cmds[k])" />
       </configuration>
     </watches-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/QuickWebDaemon$runner.coverage" NAME="runner Coverage Results" MODIFIED="1751006262815" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="watch">
