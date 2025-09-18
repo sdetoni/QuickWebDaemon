@@ -1645,6 +1645,8 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                             readLen = fileSize - 1
                             if fileEndPos > 0:
                                 readLen = fileEndPos - fileStartPos
+                            elif fileEndPos < 0 and fileStartPos > 0:
+                                readLen = fileSize - fileStartPos
                             file.seek(fileStartPos)
 
                             self.protocol_version = "HTTP/1.1"
