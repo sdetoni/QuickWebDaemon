@@ -30,7 +30,7 @@
 #
 #      regexp,     .*, override.py, new_override.py
 #      regexp-opt, .*, override.py, new_override.py, re.IGNORECASE
-#      pymatch,    .*, (override.py, new_override.py, re.IGNORECASE
+#      pymatch,    .*, override.py, new_override.py, re.IGNORECASE
 regexp-opt, .*, randomReference.py, index.py, re.IGNORECASE
 regexp,     .*, .*, index.py
 regexp,     .*, old_metadata\.*, metadata\index.py

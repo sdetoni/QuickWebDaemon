@@ -30,7 +30,7 @@
 #
 #      regexp,     .*, override.py, new_override.py
 #      regexp-opt, .*, override.py, new_override.py, re.IGNORECASE
-#      pymatch,    .*, (override.py, new_override.py, re.IGNORECASE
+#      pymatch,    .*, override.py, new_override.py, re.IGNORECASE
 debug, on
 regexp,          .*,  /mapping\.info,         index.py
 regexp-redirect, .*,  .*mapping_old\.info.*, {%PROTOCOL%}://{%HOSTNAME_NAME%}:{%PORT_NUMBER%}/mapping.info?{%QUERYSTRING%}

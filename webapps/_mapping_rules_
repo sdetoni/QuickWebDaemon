@@ -30,7 +30,7 @@
 #
 #      regexp,     .*, override.py, new_override.py
 #      regexp-opt, .*, override.py, new_override.py, re.IGNORECASE
-#      pymatch,    .*, (override.py, new_override.py, re.IGNORECASE
+#      pymatch,    .*, override.py, new_override.py, re.IGNORECASE
 #
 debug, off
 regexp-redirect, .*, ^/$|^$, demo\
