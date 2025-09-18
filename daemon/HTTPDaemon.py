@@ -1644,17 +1644,17 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                             fileSize = file.tell()
                             readLen = fileSize - 1
                             if fileEndPos > 0:
-                                readLen = fileEndPos - fileStartPos
+                                readLen = (fileEndPos - fileStartPos) - 1
                             elif fileEndPos < 0 and fileStartPos > 0:
-                                readLen = fileSize - fileStartPos
+                                readLen = (fileSize - fileStartPos) - 1
                             file.seek(fileStartPos)
 
                             self.protocol_version = "HTTP/1.1"
                             self.do_HEAD(mimetype=self.isMimeType(fullAccessPath), statusCode=scode, turnOffCache=False, closeHeader=True,
-                                         otherHeaderDict={'Content-Range': f'bytes {fileStartPos}-{readLen}/{fileSize}',
+                                         otherHeaderDict={'Content-Range': f'bytes {fileStartPos}-{fileStartPos+readLen}/{fileSize}',
                                                           'Connection': 'close',
                                                           'Content-Length': str(readLen + 1)})
-                            logging.debug(f"HTTPWebServer.do_GET file @ :: fileStartPos {fileStartPos}, fileEndPos {fileEndPos}, readLen {readLen} : filesize {fileSize} ")
+                            logging.debug(f"HTTPWebServer.do_GET file @ :: fileStartPos {fileStartPos} - {fileStartPos + readLen}, readLen {readLen} : filesize {fileSize}")
                             # write output
                             chunkSize = 65536
                             actualReadLen = readLen + 1
