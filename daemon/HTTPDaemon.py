@@ -611,8 +611,8 @@ class TemplateLoad ():
             try:
                 logging.info("TemplateLoad._parseFile : loading file ->" + self.filename + "<-")
                 fn = self.getSafeTEMPLATEPath(self.filename)
-                f  = open(fn, 'r')
-                self.src = str(f.read())
+                f  = open(fn, mode='r', encoding="utf-8")
+                self.src = f.read()
                 f.close()
                 self.chkFileChanges[fn] = os.path.getmtime(fn)
                 self.lastCheckFileChanged = datetime.datetime.now()
