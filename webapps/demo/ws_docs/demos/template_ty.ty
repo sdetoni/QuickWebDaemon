@@ -34,6 +34,22 @@ $}
 
 {% include "templateHeader.html" %}abc
 
+<h3><u>Display this current template filename</u></h3>
+<div>
+    useful for debugging multi-include files
+    {*
+<pre>
+    {% filename %}
+    {% rel_filename %}
+</pre>
+    *}
+<pre>
+    === full filename of this file {% filename %} ===
+    === relative filename of this file {% rel_filename %} ===
+</pre>
+</div>
+
+
 <h3><u>For Loop Tag Example</u></h3>
 <table>
     <tr><th>DB Version</th><th>Database Date</th></tr>
