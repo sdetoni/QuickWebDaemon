@@ -1385,6 +1385,8 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                 return s
             self.output(s)
             return True
+        if rtnStr:
+            return ''
         return False
 
     # returns true/false if successful output, runs via relative directory within the self.path
