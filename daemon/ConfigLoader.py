@@ -63,11 +63,12 @@ class ConfigLoader (object):
     decryptString = encryptString
 
     # ------------------------------------------------
-    PTYPE_S3Q, PTYPE_D3Q, PTYPE_STR_S1Q, PTYPE_STR_D1Q = range (4)
+    PTYPE_RS3Q, PTYPE_RD3Q, PTYPE_STR_RS1Q, PTYPE_STR_RD1Q, PTYPE_S3Q, PTYPE_D3Q, PTYPE_STR_S1Q, PTYPE_STR_D1Q = range (8)
     PMatchAny     = '(.*?)'
     PMatchEscape  = '\\'
-    PMatchType    = ["(''')",   '(""")',    "(')",   '(")']
-    PMatchNotType = ["(\\''')", '(\\""")', "(\\')", '(\\")']
+    PMatchType    = [ "(r''')",  '(r""")',   "(r')",   '(r")',   "(''')",   '(""")',   "(')",   '(")']
+    PMatchEndType = [ "(''')",   '(""")',    "(')",    '(")',    "(''')",   '(""")',   "(')",   '(")']
+    PMatchNotType = ["(\\r''')", '(\\r""")', "(\\r')", '(\\r")', "(\\''')", '(\\""")', "(\\')", '(\\")', ]
 
     def _paramIsType (self, param):
         if param and (type(param) is str):
@@ -108,7 +109,7 @@ class ConfigLoader (object):
             elif scanMode == SM_END:
                 prsStr = ""
                 while True:
-                    matched = re.search(self.PMatchAny + self.PMatchType[scanType], line)
+                    matched = re.search(self.PMatchAny + self.PMatchEndType[scanType], line)
                     if matched:
                         m = matched.group(1)
                         if ((len(m) > 0) and  (m[-1] == self.PMatchEscape)): # continue scanning
@@ -126,7 +127,7 @@ class ConfigLoader (object):
 
                 # no matched found, continue scanning
                 if (lineCount > 0):
-                   if ((scanType == self.PTYPE_STR_S1Q) or (scanType == self.PTYPE_STR_D1Q)):
+                   if (scanType in (self.PTYPE_STR_S1Q, self.PTYPE_STR_D1Q, self.PTYPE_STR_RS1Q, self.PTYPE_STR_RD1Q)):
                        rtnStr += '\\' # add line continuation onto the single quote type string
                    rtnStr = rtnStr.rstrip ('\n') + '\n' # add return to multi quote type string
 
@@ -182,6 +183,7 @@ class ConfigLoader (object):
                 incMatched = re.search (r'^\<(.*?)\>$', line)
                 if incMatched:
                     param = incMatched.group(1).strip()
+                    param = self._envVarExpand(param)
                     self._includeFiles(param)
                     try:
                         incFileList = open(param).readlines()
@@ -261,6 +263,7 @@ class ConfigLoader (object):
 
                     # Assign parameter to config store
                     if s[0].upper() == ConfigIncludeFile:
+                        param = self._envVarExpand(param)
                         self._includeFiles(param)
                         try:
                             incFileList = open(param).readlines()
@@ -293,7 +296,7 @@ class ConfigLoader (object):
                     s[0] = '-' + m.group(2)
                     configListScope = self._assignParameter (s[0], '', configListScope)
                 else: # ignore malformed config settings
-                    logging.warn ('ConfigLoader._loadCfg : Malformed parameter ignored : '+line)
+                    logging.warning ('ConfigLoader._loadCfg : Malformed parameter ignored : '+line)
 
         # --- end while ---
 
@@ -396,13 +399,14 @@ class ConfigLoader (object):
                     return default
 
         except Exception as inst:
-            # if default setting set, then return then set the value
+            # if default setting, then return the value
             if default:
                 self.settings[name] = default
                 return self.getSetting(name)
             logging.error('Setting name not found/load from config file ' + self.filename + ' ' + str(inst))
 
     # ------------------------------------------------
+
 
     # encrypts string using dynamically generated crypt key
     def obfuscateStringExtern (self, data, ):
@@ -620,7 +624,7 @@ class ConfigLoader (object):
         return servicesStr
 
     def printSettings (self, settings=None, depth=0):
-        if settings == None:
+        if not settings:
             settings = self.settings
             print ("ConfigLoader.printSettings")
 
