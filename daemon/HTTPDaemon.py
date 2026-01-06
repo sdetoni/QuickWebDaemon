@@ -311,7 +311,7 @@ class TemplateLoad ():
                                     # new included src +
                                     # advance past the close %} tag so to replace the tag with the include src
                                     self.src = self.src[:tokenStartPos] + \
-                                               open(incFilename).read() + \
+                                               open(incFilename, mode='r', encoding='utf-8').read() + \
                                                self.src[self.srcLexPos +len(lexCloseDict):]
 
                                     self.chkFileChanges[incFilename] = os.path.getmtime(incFilename)
@@ -622,7 +622,7 @@ class TemplateLoad ():
             try:
                 logging.info("TemplateLoad._parseFile : loading file ->" + self.filename + "<-")
                 fn = self.getSafeTEMPLATEPath(self.filename)
-                f  = open(fn, mode='r', encoding="utf-8")
+                f  = open(fn, mode='r', encoding='utf-8')
                 self.src = f.read()
                 f.close()
                 self.chkFileChanges[fn] = os.path.getmtime(fn)
@@ -888,7 +888,7 @@ class MappingRules():
 
         self.rules    = []
         self.debug    = False
-        mrf           = open (self.filepath)
+        mrf           = open (self.filepath, mode='r', encoding='utf-8')
         try:
             for line in mrf.readlines():
                 line = line.replace('\t', ' ').strip()
@@ -1066,7 +1066,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
 
             # Load the mimetypes
             try:
-               file = open (HTTPWebServer.mimeTypeFilename)
+               file = open (HTTPWebServer.mimeTypeFilename, mode='r', encoding='utf-8')
                for line in file.readlines():
                     line = line.replace('\t', ' ')
                     s = line.split(' ');
@@ -1601,6 +1601,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                         fullAccessPath = defaultsAccessPath + os.path.sep + self.defaultRunFiles[defaultsIdx]
                         continue
 
+                    # -------- Read File as Binary and send it to the Client with option to read in range/segmented mode -------
                     file = None
                     try:
                         scode        = 200
@@ -1669,7 +1670,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                                     break
 
                             self.send_response(scode)
-                            self.send_header('Content-type', self.isMimeType (fullAccessPath));
+                            self.send_header('Content-type', self.isMimeType (fullAccessPath))
                             self.end_headers()
                             self.wfile.write(file.read())
                         file.close()
@@ -1681,7 +1682,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                         except:
                             pass
 
-                        # retry file execution for default files...
+                # retry file execution for default files...
                 if defaultsRetry:
                     continue
 

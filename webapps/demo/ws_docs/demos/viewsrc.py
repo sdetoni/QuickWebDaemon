@@ -20,5 +20,5 @@ if "page" in postData:
                 output(html.escape(file.read(), quote=True))
         output('</pre></html')
     else:
-        with open(fileViewPath, 'r') as file:
+        with open(fileViewPath, mode='r', encoding='utf-8') as file:
                 output(file.read())

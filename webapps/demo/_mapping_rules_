@@ -34,7 +34,9 @@
 debug, on
 regexp,          .*,  /mapping\.info,         index.py
 regexp-redirect, .*,  .*mapping_old\.info.*, {%PROTOCOL%}://{%HOSTNAME_NAME%}:{%PORT_NUMBER%}/mapping.info?{%QUERYSTRING%}
+regexp-redirect, .*, ^/demo$, /demo/
 
 # regexp-opt, .*,  mapping\.info, index.py, re.IGNORECASE
 # regexp, .*, old_metadata\.*, metadata\index.py
 # regexp-redirect, .*,  .*mapping_old\.info.*, {%PROTOCOL%}://{%HOSTNAME_NAME%}:{%PORT_NUMBER%}/mapping.info?{%QUERYSTRING%}
+

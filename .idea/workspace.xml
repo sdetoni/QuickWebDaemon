@@ -7,7 +7,16 @@
     <bookmark url="file://$PROJECT_DIR$/daemon/HTTPDaemon.py" line="136" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ea08d542-335f-496f-827f-8ef22b954951" name="Default Changelist" comment="" />
+    <list default="true" id="ea08d542-335f-496f-827f-8ef22b954951" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daemon/ConfigLoader.py" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/ConfigLoader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daemon/HTTPDaemon.py" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/HTTPDaemon.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapps/_mapping_rules_" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/_mapping_rules_" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapps/demo/_mapping_rules_" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/demo/_mapping_rules_" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapps/demo/_templates_/temp_test.html" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/demo/_templates_/temp_test.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapps/demo/ws_docs/demos/template_ty.ty" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/demo/ws_docs/demos/template_ty.ty" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapps/demo/ws_docs/demos/viewsrc.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/demo/ws_docs/demos/viewsrc.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,8 +25,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -134,9 +143,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectFrameBounds">
     <option name="x" value="476" />
     <option name="y" value="113" />
@@ -205,21 +214,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.runner.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/projects/QuickWebDaemon",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Python.runner.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/projects/QuickWebDaemon&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
       <console-settings module-name="QuickWebDaemon" is-module-sdk="true">
@@ -277,8 +287,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-PY-251.26094.141" />
-        <option value="bundled-python-sdk-9f8e2b94138c-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26094.141" />
+        <option value="bundled-python-sdk-ce6832f46686-7b97d883f26b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.25557.178" />
       </set>
     </attachedChunks>
   </component>
@@ -377,6 +386,7 @@
         <watch expression="re.sub(k, cmds[k], str)" />
         <watch expression=" re.sub(k, cmds[k], str)" />
         <watch expression="str(cmds[k])" />
+        <watch expression="self.src[:tokenStartPos] + \&#10;                                               open(incFilename).read() + \&#10;                                               self.src[self.srcLexPos +len(lexCloseDict):]" />
       </configuration>
     </watches-manager>
   </component>

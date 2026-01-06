@@ -28,7 +28,7 @@ class ConfigLoader (object):
             self.filename      = filename
             self.settings      = {self.secType_ID:self.secTypeGlobal}
             self._includeFiles (self.filename)
-            self.settings = self._loadCfg (open (self.filename).readlines(), self.secTypeGlobal, self.settings, None)
+            self.settings = self._loadCfg (open (self.filename, mode='r', encoding='utf-8').readlines(), self.secTypeGlobal, self.settings, None)
         except Exception as inst:
             logging.error('Failed loading config file ' + str(self.filename) + ' ' + str(traceback.format_exc()))
             raise
@@ -186,7 +186,7 @@ class ConfigLoader (object):
                     param = self._envVarExpand(param)
                     self._includeFiles(param)
                     try:
-                        incFileList = open(param).readlines()
+                        incFileList = open(param, mode='r', encoding='utf-8').readlines()
 
                         #insert lines at the start of this list and continue parsing ...
                         for line in reversed (incFileList):
@@ -266,7 +266,7 @@ class ConfigLoader (object):
                         param = self._envVarExpand(param)
                         self._includeFiles(param)
                         try:
-                            incFileList = open(param).readlines()
+                            incFileList = open(param, mode='r', encoding='utf-8').readlines()
 
                             #insert lines at the start of this list and continue parsing ...
                             for line in reversed (incFileList):
@@ -423,7 +423,7 @@ class ConfigLoader (object):
         if not self._obfuscateACLTest ():
             return None
 
-        lineList = open (self.filename).readlines()
+        lineList = open (self.filename, mode='r', encoding='utf-8').readlines()
 
         MODE_NORM, MODE_COMMENT = range (2)
         scanMode    = MODE_NORM

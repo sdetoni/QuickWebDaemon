@@ -171,6 +171,8 @@ where option is as template tag name as below:
     CLOSE_VERBATIMBLOCK : {% tag CLOSE_VERBATIMBLOCK %}
 </pre>
 
+<h4>UTF-8 Chars</h4>
+{{"👍👍👍"}}
 
 {% include "templateFooter.html" %}
 </body>
