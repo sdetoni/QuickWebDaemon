@@ -1142,7 +1142,8 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                        'timeout'   : timeout}
 
         SessionList[s] = sessionInfo
-        self.log_message("sessionCreate SessionID : " + s + " created")
+        self.log_message("sessionCreate Created")
+        self.dbg_message(f"sessionCreate SessionID : {s}")
         return s
 
     # changes the state of a login session
