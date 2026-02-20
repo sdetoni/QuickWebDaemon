@@ -836,9 +836,9 @@ def HTTPWebServerSessionPurge ():
                 expires = s['expires']
                 if expires and expires < tstamp:
                     delKeys.append(key)
-                    logging.info("HTTPWebServerSessionPurge SessionID : " + key + " expired")
+                    logging.debug("HTTPWebServerSessionPurge SessionID : " + key + " expired")
                 elif (not expires) and (s['created'] + SESSION_MAXTIME < tstamp):
-                    logging.info("HTTPWebServerSessionPurge MAXTIME SessionID : " + key + " expired")
+                    logging.debug("HTTPWebServerSessionPurge MAXTIME SessionID : " + key + " expired")
                     delKeys.append(key)
             else:
                 delKeys.append(key)
@@ -1184,7 +1184,7 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
                 expires = s['expires']
                 if expires and expires < tstamp:
                     del SessionList[key]
-                    self.log_message("sessionCheckUpdate SessionID : " + key + " expired")
+                    self.dbg_message("sessionCheckUpdate SessionID : " + key + " expired")
                     return False
                 elif expires:
                     SessionList[key]['noUpdated'] += 1
@@ -1193,13 +1193,13 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
 
                 # check login status, if in init mode, not logged in, but don't delete session either
                 if s['loginState'] == SESSION_STATUS_LOGININIT:
-                    self.log_message("sessionCheckUpdate SessionID : " + key + " status " + s['loginState'])
+                    self.dbg_message("sessionCheckUpdate SessionID : " + key + " status " + s['loginState'])
                     return False
 
                 # if logout, then session removed.
                 if s['loginState'] != SESSION_STATUS_LOGIN:
                     del SessionList[key]
-                    self.log_message("sessionCheckUpdate SessionID : " + key + " status " + s['loginState'] + " session removed")
+                    self.dbg_message("sessionCheckUpdate SessionID : " + key + " status " + s['loginState'] + " session removed")
                     return False
 
                 return True
