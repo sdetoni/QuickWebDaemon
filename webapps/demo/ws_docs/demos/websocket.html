@@ -1,0 +1,71 @@
+<html>
+<h1>Web Socket Client Example Output</h1>
+<textarea style="font-family:monspace" rows=25 cols=80 id="websocket_output"></textarea>
+
+<h2>Web Socket websocket.py server example</h2>
+<iframe src="code_viewer.html?file=demos%2Fviewsrc.py%3Fpage%3Dwebsocket.py"   class="iframe_style" onload="resizeIframe(this)" style="min-height:400px"></iframe>
+
+<h2>Web Socket javascript client example</h2>
+<iframe src="code_viewer.html?file=demos%2Fviewsrc.py%3Fpage%3Dwebsocket.html" class="iframe_style" onload="resizeIframe(this)" style="min-height:400px"></iframe>
+
+<script>
+
+// Establish a WebSocket connection to the Python server
+function setupWebSocket (socketPath)
+{
+    let socket = new WebSocket(socketPath);
+
+    // Triggered when the connection successfully opens
+    socket.onopen = function(event)
+    {
+        console.log("[open] Connection established");
+        let webReq = setInterval (() =>
+        {
+            if (socket.readyState === WebSocket.OPEN)
+            {
+                socket.send("Hello from JavaScript WebSocket!");
+            }
+            else
+            {
+                console.log ("Clear interval");
+                clearInterval (webReq)
+            }
+        }, 1000);
+    };
+
+    // Triggered when the server sends a message back
+    socket.onmessage = function(event)
+    {
+        const ta = document.getElementById("websocket_output")
+        ta.value = ta.value + event.data + "\n";
+        console.log(`[message] Data received from server: ${event.data}`);
+    };
+
+    // Triggered when the connection closes
+    socket.onclose = function(event)
+    {
+        if (event.wasClean)
+        {
+            console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+        }
+        else
+        {
+            console.error('[close] Connection died... reconnecting...');
+            setupWebSocket(socketPath);
+        }
+    };
+
+    // Triggered if a connection error occurs
+    socket.onerror = function(error)
+    {
+        console.error(`[error] ${error.message}`);
+    };
+}
+
+const currentPath      = window.location.pathname;
+const parentDirectory  = currentPath.substring(0, currentPath.lastIndexOf('/'));
+const absoluteBasePath = window.location.origin + parentDirectory;
+const socketPath       = `${ absoluteBasePath.replace(/^http/gmi, 'ws') }/websocket.py`;
+setupWebSocket(socketPath);
+</script>
+</html>

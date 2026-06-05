@@ -9,13 +9,8 @@
   <component name="ChangeListManager">
     <list default="true" id="ea08d542-335f-496f-827f-8ef22b954951" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daemon/ConfigLoader.py" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/ConfigLoader.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daemon/HTTPDaemon.py" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/HTTPDaemon.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapps/_mapping_rules_" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/_mapping_rules_" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapps/demo/_mapping_rules_" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/demo/_mapping_rules_" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapps/demo/_templates_/temp_test.html" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/demo/_templates_/temp_test.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapps/demo/ws_docs/demos/template_ty.ty" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/demo/ws_docs/demos/template_ty.ty" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapps/demo/ws_docs/demos/viewsrc.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/demo/ws_docs/demos/viewsrc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapps/demo/ws_docs/docs.html" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/demo/ws_docs/docs.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,8 +20,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -246,11 +241,11 @@
       <recent name="D:\Projects\QuickWebDaemon\webapp\html\ws_docs" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\projects\QuickWebDaemon\webapps\demo\ws_docs\demos" />
       <recent name="D:\Projects\QuickWebDaemon\webapp\html\ws_docs\demos" />
       <recent name="D:\Projects\QuickWebDaemon\webapp\html\ws_docs" />
       <recent name="D:\Projects\QuickWebDaemon\webapp\html\_templates_" />
       <recent name="D:\Projects\QuickWebDaemon\webapp\html\_hidden_" />
-      <recent name="D:\Projects\QuickWebDaemon\webapp\html\ws_docs\js_libs" />
     </key>
   </component>
   <component name="RunManager">
@@ -373,20 +368,8 @@
   <component name="XDebuggerManager">
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="re.match(rule[self.REGEXP], querystring)" />
-        <watch expression="rule[self.REGEXP]" />
-        <watch expression="querystring" />
-        <watch expression="strSubtract(self.path, re.sub('([^/]+)/?$', '', self.path))" language="Python" />
-        <watch expression="self.path" language="Python" />
-        <watch expression="re.sub('(.*)(\?.*)', r&quot;\1&quot;, strSubtract(self.path, re.sub('([^/]+)/?$', '', self.path)))" language="Python" />
-        <watch expression="re.sub('[^/]+/(?$)', '\1', '/sdfsdfsdfs/sdsada.asdasd')" language="Python" />
-        <watch expression="self.path" language="Python" />
-        <watch expression="str" />
-        <watch expression="cmds[k]" />
-        <watch expression="re.sub(k, cmds[k], str)" />
-        <watch expression=" re.sub(k, cmds[k], str)" />
-        <watch expression="str(cmds[k])" />
-        <watch expression="self.src[:tokenStartPos] + \&#10;                                               open(incFilename).read() + \&#10;                                               self.src[self.srcLexPos +len(lexCloseDict):]" />
+        <watch expression="self.headers" />
+        <watch expression="__py_debug_temp_var_1751356618._headers" />
       </configuration>
     </watches-manager>
   </component>
