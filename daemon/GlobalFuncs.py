@@ -72,7 +72,6 @@ def setLogging (logFilename, logLevel, logSize, logNum, multiFileLogging=False):
         logging.error(f"Failed setting file logging for {logFilename}")
         logging.error(f"Error {str(e)}")
 
-
 # ------------------ Web Session Authentication ----------------------------
 
 # Var set as part of initGlobalFuncs()
@@ -182,16 +181,16 @@ DAEMON_RUNMODE_RUN, DAEMON_RUNMODE_STOPEXIT, DAEMON_RUNMODE_RESTART = range(3)
 DaemonRunningState = None
 DaemonServerIpAddrs = ''
 
-def shutdownDaemon():
+def shutdownDaemon(httpDaemon):
     global DaemonRunningState
     DaemonRunningState = DAEMON_RUNMODE_STOPEXIT
-    HTTPDaemon.stopDaemon()
+    httpDaemon.stopDaemon()
 
 
-def restartDaemon():
+def restartDaemon(httpDaemon):
     global DaemonRunningState
     DaemonRunningState = DAEMON_RUNMODE_RESTART
-    HTTPDaemon.stopDaemon()
+    httpDaemon.stopDaemon()
 
 # ------------------ Init Logging/Config/DB Objects ----------------------------
 

@@ -6,7 +6,7 @@ dt = ""
 if "usertxt" in postData:
     dt = "<p> Data transferred: %s </p>" % postData["usertxt"]
 
-output ('''
+output (r'''
 <html>
 %s
 <form method="post">

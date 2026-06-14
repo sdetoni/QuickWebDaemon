@@ -8,8 +8,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea08d542-335f-496f-827f-8ef22b954951" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daemon/GlobalFuncs.py" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/GlobalFuncs.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daemon/HTTPDaemon.py" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/HTTPDaemon.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapps/demo/ws_docs/demos/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/demo/ws_docs/demos/parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/webapps/demo/ws_docs/docs.html" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/demo/ws_docs/docs.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

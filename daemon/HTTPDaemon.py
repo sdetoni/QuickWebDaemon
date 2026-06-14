@@ -25,15 +25,14 @@ import struct
 # HTTPDaemon instances created
 SERVERS = []
 
-# -------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
 
 class FieldStorage (cgi.FieldStorage):
 
     def make_file(self):
         return tempfile.TemporaryFile("wb+")
 
-
-# -------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
 
 def nvl (param, ifNone=''):
     if not param:
@@ -43,7 +42,7 @@ def nvl (param, ifNone=''):
 def strSubtract (a, b):
     return re.sub('^' + re.escape(nvl(b)), '', nvl(a, ''))
 
-# -------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
 
 class TemplateLoad ():
     class LexItem:
@@ -813,7 +812,7 @@ class TemplateLoad ():
         self.homeDir              = homeDir
         self._parseFile()
 
-# ------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
 
 SessionList            = {}
 SESSION_STATUS_LOGININIT = 'loginInit'
@@ -854,7 +853,7 @@ def HTTPWebServerSessionPurge ():
 
     logging.info("HTTPWebServerSessionPurge : Session No (After Purge) : " + str(len(SessionList)))
 
-# ------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
 
 class MappingRules():
     TYPE  = "type"; TYPE_RE = "regexp"; TYPE_REOPT = "regexp-opt"; TYPE_PYMATCH = "pymatch"; TYPE_DEBUG = "debug";
@@ -1827,6 +1826,8 @@ class HTTPWebServer (BaseHTTPServer.BaseHTTPRequestHandler):
     do_PATCH    = processHTTPCommand
     do_DELETE   = processHTTPCommand
 
+# ----------------------------------------------------------------------------------------------------
+
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
 
@@ -1890,10 +1891,10 @@ class HTTPInstances (threading.Thread):
         self.HTTPDaemon.server_close()
         logging.info ('HTTPInstances.run Stops - %s:%s' % (self.host_name, self.port_number))
 
-
-# #######################################################################################
+# ----------------------------------------------------------------------------------------------------
 
 def startDaemon (host_name = socket.gethostname(), port_number = 80, serve_via_ssl = False, ssl_server_pem = None, homeDir ='./webapp', homeScriptName = 'index.py', mimeTypeFilename ='./config/mimetypes.txt', threaded = False):
+    global SERVERS
     logging.debug ('HTTPDaemon.startDaemon ')
 
     inst = HTTPInstances (host_name, port_number, serve_via_ssl, ssl_server_pem, homeDir, homeScriptName, mimeTypeFilename)
@@ -1902,6 +1903,8 @@ def startDaemon (host_name = socket.gethostname(), port_number = 80, serve_via_s
     inst.start()
     if not threaded:
         inst.join()
+
+# ----------------------------------------------------------------------------------------------------
 
 def stopDaemon ():
     global SERVERS
